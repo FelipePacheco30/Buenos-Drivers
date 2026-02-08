@@ -1,6 +1,5 @@
 FROM node:20-alpine
 
-# Instala cliente PostgreSQL
 RUN apk add --no-cache postgresql-client
 
 WORKDIR /app
@@ -12,4 +11,4 @@ COPY . .
 
 EXPOSE 3333
 
-CMD ["npm", "start"]
+ENTRYPOINT ["sh", "./docker-entrypoint.sh"]

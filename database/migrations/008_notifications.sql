@@ -1,13 +1,26 @@
-CREATE TYPE notification_type AS ENUM ('SYSTEM', 'ADMIN');
+-- ================================
+-- NOTIFICATIONS
+-- ================================
 
+-- ENUM: notification_type
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type WHERE typname = 'notification_type'
+    ) THEN
+        CREATE TYPE notification_type AS ENUM ('SYSTEM', 'ADMIN');
+    END IF;
+END$$;
+
+-- TABLE: notifications
 CREATE TABLE IF NOT EXISTS notifications (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
+    type notification_type NOT NULL DEFAULT 'SYSTEM',
     title VARCHAR(150) NOT NULL,
     message TEXT NOT NULL,
-    type notification_type NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 
     CONSTRAINT fk_notification_user
         FOREIGN KEY (user_id)
@@ -15,15 +28,12 @@ CREATE TABLE IF NOT EXISTS notifications (
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS admin_actions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    admin_id UUID NOT NULL,
-    action VARCHAR(150) NOT NULL,
-    target_id UUID,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
+-- INDEXES
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id
+    ON notifications(user_id);
 
-    CONSTRAINT fk_admin_action_user
-        FOREIGN KEY (admin_id)
-        REFERENCES users(id)
-);
+CREATE INDEX IF NOT EXISTS idx_notifications_is_read
+    ON notifications(is_read);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at
+    ON notifications(created_at);

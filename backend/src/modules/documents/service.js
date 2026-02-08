@@ -1,8 +1,12 @@
 import DocumentsRepository from './repository.js';
 
 class DocumentsService {
-  async list(driverId) {
-    return DocumentsRepository.findByDriver(driverId);
+  async create(data) {
+    return DocumentsRepository.create(data);
+  }
+
+  async listByUser(userId) {
+    return DocumentsRepository.findByUserId(userId);
   }
 }
 

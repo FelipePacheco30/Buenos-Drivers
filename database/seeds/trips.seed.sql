@@ -1,44 +1,39 @@
--- Corridas do Rafael (valor bruto 10, taxa 25%, motorista recebe 7.50)
+-- ================================
+-- TRIPS SEED (IDEMPOTENTE)
+-- ================================
 
 INSERT INTO trips (
-    driver_id,
+    id,
     user_id,
+    driver_id,
     type,
-    amount,
-    platform_fee,
-    driver_amount,
     status,
+    origin,
+    destination,
+    price,
     completed_at
 )
 VALUES
 (
-    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    'dddddddd-dddd-dddd-dddd-dddddddddddd',
     '55555555-5555-5555-5555-555555555555',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
     'RIDE',
-    10.00,
-    2.50,
-    7.50,
     'COMPLETED',
-    NOW()
+    'Centro',
+    'Palermo',
+    25.00,
+    NOW() - INTERVAL '2 days'
 ),
 (
-    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
     '55555555-5555-5555-5555-555555555555',
+    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
     'DELIVERY',
-    15.00,
-    3.75,
-    11.25,
     'COMPLETED',
-    NOW()
-);
-
--- Transações na carteira
-INSERT INTO wallet_transactions (wallet_id, amount, type)
-SELECT id, 7.50, 'CREDIT'
-FROM wallets
-WHERE driver_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
-
-INSERT INTO wallet_transactions (wallet_id, amount, type)
-SELECT id, 11.25, 'CREDIT'
-FROM wallets
-WHERE driver_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+    'Recoleta',
+    'Belgrano',
+    15.00,
+    NOW() - INTERVAL '1 day'
+)
+ON CONFLICT (id) DO NOTHING;

@@ -1,47 +1,18 @@
 import express from 'express';
-import cors from 'cors';
-
 import routes from './routes/index.js';
-import errorMiddleware from './middlewares/error.middleware.js';
-import websocket from './config/websocket.js';
-import documentExpirationJob from './jobs/documentExpiration.job.js';
 
 const app = express();
 
-/**
- * =====================
- * Middlewares globais
- * =====================
- */
-app.use(cors());
+// Middleware para parse de JSON
 app.use(express.json());
 
-/**
- * =====================
- * Rotas
- * =====================
- */
-app.use('/api', routes);
+// Rotas da aplicação
+app.use(routes);
 
-/**
- * =====================
- * WebSocket
- * =====================
- */
-websocket.initialize(app);
-
-/**
- * =====================
- * Job automático diário
- * =====================
- */
-setInterval(documentExpirationJob, 1000 * 60 * 60 * 24); // 24h
-
-/**
- * =====================
- * Tratamento de erros
- * =====================
- */
-app.use(errorMiddleware);
+// Middleware de tratamento de erros
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: err.message });
+});
 
 export default app;

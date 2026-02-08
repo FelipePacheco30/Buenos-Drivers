@@ -10,6 +10,21 @@ class AuthController {
       next(err);
     }
   }
+
+  async register(req, res, next) {
+    try {
+      const { name, email, password, role } = req.body;
+      const result = await AuthService.register({
+        name,
+        email,
+        password,
+        role,
+      });
+      return res.status(201).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default new AuthController();

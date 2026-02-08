@@ -1,14 +1,12 @@
 import VehiclesRepository from './repository.js';
 
 class VehiclesService {
-  async addVehicle(driverId, vehicle) {
-    const total = await VehiclesRepository.countActive(driverId);
+  async create(data) {
+    return VehiclesRepository.create(data);
+  }
 
-    if (total >= 2) {
-      throw new Error('Limite de veículos atingido');
-    }
-
-    await VehiclesRepository.create({ ...vehicle, driver_id: driverId });
+  async listByUser(userId) {
+    return VehiclesRepository.findByUserId(userId);
   }
 }
 

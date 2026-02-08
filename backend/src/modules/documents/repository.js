@@ -1,19 +1,26 @@
 import { query } from '../../config/database.js';
 
 class DocumentsRepository {
-  async findByDriver(driverId) {
+  async create({ userId, type, url, status }) {
     const { rows } = await query(
-      'SELECT * FROM documents WHERE driver_id = $1',
-      [driverId]
+      `
+      INSERT INTO documents (user_id, type, url, status)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
+      [userId, type, url, status || 'PENDING']
     );
-    return rows;
+
+    return rows[0];
   }
 
-  async updateStatus(id, status) {
-    await query(
-      'UPDATE documents SET status = $1 WHERE id = $2',
-      [status, id]
+  async findByUserId(userId) {
+    const { rows } = await query(
+      `SELECT * FROM documents WHERE user_id = $1 ORDER BY created_at DESC`,
+      [userId]
     );
+
+    return rows;
   }
 }
 

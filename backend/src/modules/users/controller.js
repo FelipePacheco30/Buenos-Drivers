@@ -1,10 +1,26 @@
-import UsersService from './service.js';
+import UsersRepository from './repository.js';
 
 class UsersController {
-  async profile(req, res, next) {
+  async me(req, res, next) {
     try {
-      const user = await UsersService.getProfile(req.user.user_id);
-      res.json(user);
+      const userId = req.user.id;
+
+      const user = await UsersRepository.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+
+      return res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async update(req, res, next) {
+    try {
+      // Placeholder seguro
+      return res.json({ message: 'Update user - em desenvolvimento' });
     } catch (err) {
       next(err);
     }

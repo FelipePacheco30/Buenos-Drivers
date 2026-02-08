@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
@@ -22,7 +20,6 @@ services:
   backend:
     build: ./backend
     container_name: buenos_backend
-    restart: always
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,25 +37,25 @@ services:
     ports:
       - "3333:3333"
     volumes:
-      - ./database:/database:ro
+      - ./database:/database
+    restart: always
     command: >
       sh -c "
-      set -e &&
+      echo '⏳ Aguardando Postgres...' &&
+      until pg_isready -h postgres -p 5432 -U buenos -d buenos_drivers; do
+        sleep 2;
+      done &&
+
       echo '🗄️ Executando migrations...' &&
       for file in /database/migrations/*.sql; do
-        echo \"→ Rodando $$file\" &&
-        psql postgresql://buenos:buenos@postgres:5432/buenos_drivers \
-          --set ON_ERROR_STOP=on \
-          -f $$file;
+        echo \"→ Rodando $file\" &&
+        psql postgresql://buenos:buenos@postgres:5432/buenos_drivers -f $file;
       done &&
 
       echo '🌱 Executando seeds...' &&
-      for seed in /database/seeds/*.sql; do
-        echo \"→ Rodando $$seed\" &&
-        psql postgresql://buenos:buenos@postgres:5432/buenos_drivers \
-          --set ON_ERROR_STOP=on \
-          -f $$seed;
-      done &&
+      psql postgresql://buenos:buenos@postgres:5432/buenos_drivers -f /database/seeds/users.seed.sql &&
+      psql postgresql://buenos:buenos@postgres:5432/buenos_drivers -f /database/seeds/drivers.seed.sql &&
+      psql postgresql://buenos:buenos@postgres:5432/buenos_drivers -f /database/seeds/trips.seed.sql &&
 
       echo '🚀 Iniciando API...' &&
       npm run start
@@ -67,11 +64,12 @@ services:
   frontend:
     build: ./frontend
     container_name: buenos_frontend
-    restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     ports:
       - "3000:80"
+    restart: always
 
 volumes:
   postgres_data:
