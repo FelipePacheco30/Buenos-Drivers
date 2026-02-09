@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Backend API do Buenos Drivers App",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "dev": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "migrate": "node scripts/runMigrations.js",
     "seed": "node scripts/runSeeds.js"
@@ -20,5 +21,8 @@
     "node-cron": "^3.0.3",
     "pg": "^8.11.5",
     "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

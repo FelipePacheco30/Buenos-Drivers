@@ -1,18 +1,13 @@
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/auth/login';
+
 function App() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffffff',
-        color: '#75aadb',
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-      }}
-    >
-      <h1>Buenos Drivers</h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
 }
 

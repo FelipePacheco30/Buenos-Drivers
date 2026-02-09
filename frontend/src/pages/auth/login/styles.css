@@ -1,0 +1,224 @@
+/* RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* FUNDO */
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  background:
+    linear-gradient(
+      rgba(10, 30, 60, 0.78),
+      rgba(10, 30, 60, 0.78)
+    ),
+    url('/src/assets/images/buenosAires2.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CARD */
+.login-card {
+  width: 92%;
+  max-width: 760px;
+  background: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 12px rgba(252, 191, 69, 0.25);
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: all 0.6s ease;
+}
+
+.login-card.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .login-card {
+    flex-direction: row;
+    height: 440px;
+  }
+}
+
+/* BANDEIRA */
+.flag-area {
+  flex: 1;
+  background: linear-gradient(
+    to bottom,
+    #75aadb 0%,
+    #75aadb 33%,
+    #ffffff 33%,
+    #ffffff 66%,
+    #75aadb 66%,
+    #75aadb 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sun {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fcbf45 40%, transparent 60%);
+  opacity: 0.6;
+}
+
+/* FORM */
+.form-area {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TÍTULO */
+.title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.blue {
+  color: #75aadb;
+}
+
+.yellow {
+  color: #fcbf45;
+}
+
+/* CAMPOS */
+.field {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 14px;
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #75aadb;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* INPUTS E SELECT */
+input,
+/* SELECT PREMIUM */
+select {
+  width: 100%;
+  height: 48px;
+  padding: 0 42px 0 14px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2d3d;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, #fcbf45 50%),
+    linear-gradient(135deg, #fcbf45 50%, transparent 50%),
+    linear-gradient(to right, #ddd, #ddd);
+
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%,
+    calc(100% - 42px) 50%;
+
+  background-size:
+    6px 6px,
+    6px 6px,
+    1px 24px;
+
+  background-repeat: no-repeat;
+}
+
+/* HOVER */
+select:hover {
+  border-color: #75aadb;
+}
+
+/* FOCUS */
+select:focus {
+  outline: none;
+  border-color: #75aadb;
+  box-shadow: 0 0 0 2px rgba(117, 170, 219, 0.3);
+}
+
+/* OPTIONS */
+select option {
+  background-color: #ffffff;
+  color: #1f2d3d;
+  padding: 12px;
+  font-size: 0.95rem;
+}
+
+
+/* SENHA */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 44px;
+}
+
+.eye {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #fcbf45;
+}
+
+/* BOTÃO */
+button {
+  margin-top: 16px;
+  width: 100%;
+  max-width: 320px;
+  height: 48px;
+  background: #fcbf45;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(252, 191, 69, 0.45);
+}
+/* GARANTE QUE INPUTS NÃO TENHAM ESTILO DE SELECT */
+input {
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  background-image: none !important;
+}
