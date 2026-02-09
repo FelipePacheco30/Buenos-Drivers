@@ -13,7 +13,7 @@ export default {
   DATABASE: {
     HOST: process.env.DB_HOST || 'localhost',
     PORT: process.env.DB_PORT || 5432,
-    NAME: process.env.DB_NAME || 'buenos_drivers',
+    NAME: process.env.DB_NAME || 'buenos',
     USER: process.env.DB_USER || 'postgres',
     PASSWORD: process.env.DB_PASSWORD || 'postgres',
   },

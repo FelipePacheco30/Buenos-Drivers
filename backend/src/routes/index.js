@@ -45,10 +45,6 @@ routes.post(
   safe(AuthController.login, 'AuthController.login')
 );
 
-routes.post(
-  '/auth/register',
-  safe(AuthController.register, 'AuthController.register')
-);
 
 /**
  * =====================

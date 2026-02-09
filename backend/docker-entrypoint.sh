@@ -14,16 +14,9 @@ for file in /database/migrations/*.sql; do
   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$file"
 done
 
-echo "🌱 Executando seeds (ordem controlada)..."
+echo "🌱 Seed usuários (hash real)..."
+node scripts/seedUsers.js
 
-echo "→ users.seed.sql"
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /database/seeds/users.seed.sql
-
-echo "→ drivers.seed.sql"
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /database/seeds/drivers.seed.sql
-
-echo "→ trips.seed.sql"
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /database/seeds/trips.seed.sql
 
 echo "✅ Banco pronto"
 

@@ -1,26 +1,31 @@
-import pkg from 'pg';
-import env from './env.js';
+import pg from 'pg';
 
-const { Pool } = pkg;
+const { Pool } = pg;
 
-const pool = new Pool({
-  host: env.DATABASE.HOST,
-  port: env.DATABASE.PORT,
-  database: env.DATABASE.NAME,
-  user: env.DATABASE.USER,
-  password: env.DATABASE.PASSWORD,
-  ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+export const pool = new Pool({
+  host: process.env.POSTGRES_HOST || 'postgres',
+  port: 5432,
+  user: process.env.POSTGRES_USER || 'buenos',
+  password: process.env.POSTGRES_PASSWORD || 'buenos',
+  database: process.env.POSTGRES_DB || 'buenos',
 });
 
+
 pool.on('connect', () => {
-  console.log('📦 PostgreSQL conectado');
+  console.log('🟢 PostgreSQL conectado');
 });
 
 pool.on('error', (err) => {
-  console.error('❌ Erro no PostgreSQL', err);
+  console.error('🔴 Erro inesperado no PostgreSQL', err);
   process.exit(1);
 });
 
-export const query = (text, params) => pool.query(text, params);
-
-export default pool;
+/**
+ * Query helper
+ * @param {string} text
+ * @param {Array} params
+ */
+export async function query(text, params = []) {
+  const result = await pool.query(text, params);
+  return result;
+}

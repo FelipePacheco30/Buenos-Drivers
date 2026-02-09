@@ -6,71 +6,111 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
   const [animate, setAnimate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setAnimate(true);
   }, []);
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-  };
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:3333/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // 🔹 REMOVIDO role do body, só envia email e password
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Credenciais inválidas');
+      }
+
+      // salva token ou dados do usuário
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data));
+
+      alert('Login realizado com sucesso 🚀');
+
+      // redirecionamento futuro
+      // navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Erro ao conectar com o servidor');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="login-page">
       <div className={`login-card ${animate ? 'show' : ''}`}>
-        {/* LADO BANDEIRA */}
         <div className="flag-area">
           <div className="sun" />
         </div>
 
-        {/* LADO FORM */}
         <form className="form-area" onSubmit={handleSubmit}>
-          <h1 className="title">
+          <h2 className="title">
             <span className="blue">Buenos</span>{' '}
             <span className="yellow">Drivers</span>
-          </h1>
+          </h2>
 
-          <div className="field">
-            <label>Tipo de acesso</label>
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="USER">Usuário</option>
-              <option value="DRIVER">Motorista</option>
-              <option value="ADMIN">Administrador</option>
-            </select>
-          </div>
+          <label>Tipo de acesso</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            disabled={loading}
+          >
+            <option value="USER">Usuário</option>
+            <option value="DRIVER">Motorista</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
 
-          <div className="field">
-            <label>Email</label>
+          <label>Email</label>
+          <input
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+            required
+          />
+
+          <label>Senha</label>
+          <div className="password-wrapper">
             <input
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
               required
             />
+            <span
+              className="eye"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              👁
+            </span>
           </div>
 
-          <div className="field">
-            <label>Senha</label>
-            <div className="password-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span
-                className="eye"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                👁
-              </span>
-            </div>
-          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Entrando…' : 'Entrar'}
+          </button>
 
-          <button type="submit">Entrar</button>
+          {error && <div className="error-message">{error}</div>}
         </form>
       </div>
     </div>

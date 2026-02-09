@@ -1,29 +1,26 @@
-import AuthService from './service.js';
+import UsersRepository from '../users/repository.js';
 
 class AuthController {
-  async login(req, res, next) {
-    try {
-      const { email, password, role } = req.body;
-      const result = await AuthService.login({ email, password, role });
-      return res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  }
+  async login(req, res) {
+    const { email, password } = req.body;
 
-  async register(req, res, next) {
-    try {
-      const { name, email, password, role } = req.body;
-      const result = await AuthService.register({
-        name,
-        email,
-        password,
-        role,
-      });
-      return res.status(201).json(result);
-    } catch (err) {
-      next(err);
+    const user = await UsersRepository.findByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciais inválidas' });
     }
+
+    // LOGIN SIMPLES (SEM HASH)
+    if (password !== user.password) {
+      return res.status(401).json({ message: 'Credenciais inválidas' });
+    }
+    
+    return res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
   }
 }
 

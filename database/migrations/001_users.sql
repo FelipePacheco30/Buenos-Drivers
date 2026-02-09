@@ -24,14 +24,18 @@ END$$;
 
 -- TABLE: users
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
+
+    -- 🔴 SENHA SIMPLES (SEM HASH)
+    password VARCHAR(100) NOT NULL,
+
     role user_role NOT NULL DEFAULT 'USER',
     status user_status NOT NULL DEFAULT 'ACTIVE',
     city VARCHAR(100),
     reputation_score NUMERIC(3,2) NOT NULL DEFAULT 5.0,
+
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
