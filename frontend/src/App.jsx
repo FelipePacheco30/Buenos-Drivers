@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/login";
-import Driver from "./pages/driver/home";
+import Driver from "./pages/driver/Home";
 import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
