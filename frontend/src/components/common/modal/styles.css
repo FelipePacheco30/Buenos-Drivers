@@ -1,0 +1,46 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #f9f9f7;
+  width: 90%;
+  max-width: 420px;
+  border-radius: 18px;
+  padding: 20px;
+  animation: pop 0.3s ease;
+}
+
+.modal-box header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-box header h3 {
+  color: #75aadb;
+}
+
+.modal-box header button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

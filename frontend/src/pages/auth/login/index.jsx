@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './styles.css';
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [role, setRole] = useState('DRIVER');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +29,6 @@ export default function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        // 🔹 REMOVIDO role do body, só envia email e password
         body: JSON.stringify({
           email,
           password,
@@ -39,14 +41,21 @@ export default function Login() {
         throw new Error(data.message || 'Credenciais inválidas');
       }
 
-      // salva token ou dados do usuário
+      // salva dados
       localStorage.setItem('role', data.role);
       localStorage.setItem('user', JSON.stringify(data));
 
       alert('Login realizado com sucesso 🚀');
 
-      // redirecionamento futuro
-      // navigate('/dashboard')
+      // 🔥 REDIRECIONAMENTO REAL
+      if (data.role === 'DRIVER') {
+        navigate('/driver', { replace: true });
+      } else if (data.role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/');
+      }
+
     } catch (err) {
       setError(err.message || 'Erro ao conectar com o servidor');
     } finally {

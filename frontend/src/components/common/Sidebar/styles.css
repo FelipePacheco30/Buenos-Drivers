@@ -1,0 +1,56 @@
+/* ☰ hamburguer */
+.sidebar-hamburger {
+  position: fixed;
+  top: 18px;
+  left: 18px; /* ✅ AGORA À ESQUERDA */
+  z-index: 40;
+  cursor: pointer;
+  color: #75aadb;
+}
+
+/* sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 35;
+
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  padding-top: 80px;
+}
+
+/* aberta */
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* navegação */
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 0 28px;
+}
+
+/* itens */
+.sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+}
+
+.sidebar button svg {
+  font-size: 22px;
+  color: #75aadb;
+}
