@@ -1,23 +1,29 @@
 import { query } from '../../config/database.js';
 
 class DocumentsRepository {
-  async create({ userId, type, url, status }) {
+  async upsert({ driverId, type, issuedAt, expiresAt, status }) {
     const { rows } = await query(
       `
-      INSERT INTO documents (user_id, type, url, status)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO documents (driver_id, type, issued_at, expires_at, status)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (driver_id, type)
+      DO UPDATE SET
+        issued_at = EXCLUDED.issued_at,
+        expires_at = EXCLUDED.expires_at,
+        status = EXCLUDED.status,
+        updated_at = NOW()
       RETURNING *
       `,
-      [userId, type, url, status || 'PENDING']
+      [driverId, type, issuedAt, expiresAt, status]
     );
 
     return rows[0];
   }
 
-  async findByUserId(userId) {
+  async findByDriverId(driverId) {
     const { rows } = await query(
-      `SELECT * FROM documents WHERE user_id = $1 ORDER BY created_at DESC`,
-      [userId]
+      `SELECT * FROM documents WHERE driver_id = $1 ORDER BY type ASC`,
+      [driverId]
     );
 
     return rows;

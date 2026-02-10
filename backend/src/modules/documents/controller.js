@@ -2,12 +2,13 @@ import DocumentsService from './service.js';
 
 class DocumentsController {
   /**
-   * Upload / cadastro de documento do motorista logado
+   * Cadastro/atualização de documento (sem PDF/foto)
+   * Body: { type: 'CNH'|'CRLV'|'CRIMINAL_RECORD', issued_at: 'YYYY-MM-DD', expires_at: 'YYYY-MM-DD' }
    */
   async upload(req, res, next) {
     try {
-      const document = await DocumentsService.create({
-        userId: req.user.user_id,
+      const document = await DocumentsService.upsertForUser({
+        userId: req.user.id,
         ...req.body,
       });
 
@@ -22,7 +23,7 @@ class DocumentsController {
    */
   async list(req, res, next) {
     try {
-      const documents = await DocumentsService.listByUser(req.user.user_id);
+      const documents = await DocumentsService.listForUser(req.user.id);
       return res.json(documents);
     } catch (err) {
       next(err);

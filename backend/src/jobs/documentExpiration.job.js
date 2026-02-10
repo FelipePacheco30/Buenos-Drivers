@@ -19,7 +19,7 @@ async function documentExpirationJob() {
       SELECT d.id AS document_id,
              d.driver_id,
              d.type,
-             d.expiration_date,
+             d.expires_at,
              u.id AS user_id,
              u.status
       FROM documents d
@@ -30,7 +30,7 @@ async function documentExpirationJob() {
     const today = new Date();
 
     for (const row of result.rows) {
-      const expDate = new Date(row.expiration_date);
+      const expDate = new Date(row.expires_at);
       const diffDays = Math.ceil(
         (expDate - today) / (1000 * 60 * 60 * 24)
       );
@@ -41,7 +41,7 @@ async function documentExpirationJob() {
       if (diffDays <= 0) {
         newDocStatus = 'EXPIRED';
         newUserStatus = 'BANNED';
-      } else if (diffDays <= 7) {
+      } else if (diffDays <= 14) {
         newDocStatus = 'EXPIRING';
         if (row.status === 'ACTIVE') {
           newUserStatus = 'IRREGULAR';

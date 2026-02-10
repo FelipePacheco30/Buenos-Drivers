@@ -2,36 +2,42 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import AuthLayout from "../layouts/AuthLayout";
 import DriverLayout from "../layouts/DriverLayout";
+import PrivateRoute from "./PrivateRoute";
 
-import Login from "../pages/auth/login";
-
+import Login from "../pages/auth/Login";
 import DriverHome from "../pages/driver/Home";
+import DriverAccount from "../pages/driver/Account";
 import DriverMessages from "../pages/driver/Messages";
 import DriverWallet from "../pages/driver/Wallet";
-import DriverAccount from "../pages/driver/Account";
+import DriverTest from "../pages/driver/Test";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 🔁 Rota raiz */}
+        {/* RAIZ */}
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* 🔓 Rotas públicas */}
+        {/* ROTAS PÚBLICAS */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
         </Route>
 
-        {/* 🔒 Rotas do motorista */}
-        <Route element={<DriverLayout />}>
-          <Route path="/driver" element={<DriverHome />} />
-          <Route path="/driver/messages" element={<DriverMessages />} />
-          <Route path="/driver/wallet" element={<DriverWallet />} />
-          <Route path="/driver/account" element={<DriverAccount />} />
+        {/* ROTAS PROTEGIDAS DRIVER */}
+        <Route
+          path="/driver"
+          element={
+            <PrivateRoute>
+              <DriverLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<DriverHome />} />
+          <Route path="test" element={<DriverTest />} />
+          <Route path="account" element={<DriverAccount />} />
+          <Route path="messages" element={<DriverMessages />} />
+          <Route path="wallet" element={<DriverWallet />} />
         </Route>
-
-        {/* ❌ fallback */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

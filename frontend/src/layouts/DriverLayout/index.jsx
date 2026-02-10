@@ -1,24 +1,18 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../../components/common/Sidebar';
-import './styles.css';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../../components/common/Sidebar";
+import "./styles.css";
 
 export default function DriverLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <div className="driver-layout">
-      {/* Ícone ☰ */}
-      <button
-        className="driver-menu-button"
-        onClick={() => setSidebarOpen(true)}
-      >
-        ☰
-      </button>
+      {/* Sidebar com hambúrguer próprio */}
+      <Sidebar />
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      <Outlet />
+      {/* Conteúdo do Outlet */}
+      <div className="driver-layout-content">
+        <Outlet />
+      </div>
     </div>
   );
 }

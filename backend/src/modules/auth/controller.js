@@ -16,10 +16,16 @@ class AuthController {
     }
     
     return res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role
+      token: user.id,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        city: user.city,
+        reputation_score: user.reputation_score
+      }
     });
   }
 }

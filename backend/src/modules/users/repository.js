@@ -11,7 +11,7 @@ class UsersRepository {
 
   async findById(id) {
     const { rows } = await pool.query(
-      'SELECT id, name, email, role FROM users WHERE id = $1',
+      'SELECT id, name, email, role, status, city, reputation_score FROM users WHERE id = $1',
       [id]
     );
     return rows[0];

@@ -1,0 +1,273 @@
+/* CONTAINER GERAL */
+.driver-account {
+  min-height: 100vh;
+  background: #75aadb; /* azul principal de fundo */
+  padding-bottom: 40px;
+  color: #1f2933;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* BANNER SUPERIOR */
+.account-banner {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.account-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+}
+
+.account-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(117, 170, 219, 0.85),
+    rgba(117, 170, 219, 0.4)
+  );
+}
+
+.account-banner-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.account-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 999px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.account-avatar span {
+  font-size: 32px;
+  font-weight: 700;
+  color: #75aadb;
+}
+
+.account-name {
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* MÉTRICAS RÁPIDAS */
+/* BLOCO CENTRAL BRANCO (MÉTRICAS + DOCUMENTOS) */
+.account-main {
+  margin-top: -8px; /* afasta um pouco do banner */
+  padding: 0 16px;
+}
+
+.account-main-inner {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px 16px 20px; /* mais respiro acima das métricas */
+}
+
+/* MÉTRICAS RÁPIDAS (EM LINHA, NÃO “BOTÕES”) */
+.account-metrics {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px; /* mais espaço até a seção de documentos */
+}
+
+.metric-card {
+  flex: 1;
+}
+
+.metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.metric-value {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* DOCUMENTOS */
+.account-documents {
+  margin-top: 8px; /* pequena distância, o espaçamento maior já vem das métricas */
+}
+
+.account-documents h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.documents-loading,
+.documents-empty {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+.documents-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.document-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.document-card.success {
+  border-left: 4px solid #16a34a;
+}
+
+.document-card.warning {
+  border-left: 4px solid #fbbf24;
+}
+
+.document-card.danger {
+  border-left: 4px solid #ef4444;
+}
+
+.document-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.document-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: rgba(117, 170, 219, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.document-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.document-status-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.document-status-pill.success {
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+}
+
+.document-status-pill.warning {
+  background: rgba(251, 191, 36, 0.1);
+  color: #b45309;
+}
+
+.document-status-pill.danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+}
+
+.document-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.document-dates strong {
+  font-weight: 600;
+}
+
+.document-upload-button {
+  margin-top: 6px;
+  align-self: flex-start;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fcbf45;
+  color: #111827;
+}
+
+.document-upload-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.document-upload-button:not(:disabled):hover {
+  background: #fbb02a;
+}
+
+/* BOTÃO SAIR */
+.logout-button {
+  display: block;
+  margin: 24px auto 0;
+  background: #fcbf45;
+  border: none;
+  color: #ffffff;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #fbb02a;
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .driver-account {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .account-metrics {
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .account-documents {
+    padding: 0 24px;
+  }
+}

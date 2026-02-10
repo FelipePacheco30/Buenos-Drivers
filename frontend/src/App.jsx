@@ -1,25 +1,7 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/auth/login";
-import Driver from "./pages/driver/Home";
-import PrivateRoute from "./routes/PrivateRoute";
+import AppRoutes from "./routes";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-
-      <Route path="/login" element={<Login />} />
-
-      <Route
-        path="/driver"
-        element={
-          <PrivateRoute>
-            <Driver />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

@@ -1,17 +1,19 @@
-import api from './api';
-
 const DriverService = {
-  getEarnings: async () => {
-    const res = await api.get('/driver/earnings');
-    return res.data;
-  },
-  getWallet: async () => {
-    const res = await api.get('/driver/wallet');
-    return res.data;
-  },
-  startTrip: async (tripId) => {
-    const res = await api.post(`/driver/trips/${tripId}/start`);
-    return res.data;
+  uploadDocument: async (formData) => {
+    const res = await fetch("http://localhost:3333/documents", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.message || "Erro ao enviar documento");
+    }
+
+    return res.json();
   },
 };
 

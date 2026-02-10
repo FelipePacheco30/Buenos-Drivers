@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./styles.css";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const [role, setRole] = useState('DRIVER');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [role, setRole] = useState("DRIVER");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [animate, setAnimate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setAnimate(true);
@@ -24,40 +24,42 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3333/auth/login', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3333/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
           password,
+          role,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Credenciais inválidas');
+        throw new Error(data.message || "Credenciais inválidas");
       }
 
-      // salva dados
-      localStorage.setItem('role', data.role);
-      localStorage.setItem('user', JSON.stringify(data));
+      // salva token e usuário (estrutura { token, user })
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      alert('Login realizado com sucesso 🚀');
+      alert("Login realizado com sucesso 🚀");
 
       // 🔥 REDIRECIONAMENTO REAL
-      if (data.role === 'DRIVER') {
-        navigate('/driver', { replace: true });
-      } else if (data.role === 'ADMIN') {
-        navigate('/admin', { replace: true });
+      if (data.user.role === "DRIVER") {
+        navigate("/driver", { replace: true });
+      } else if (data.user.role === "ADMIN") {
+        navigate("/admin", { replace: true });
       } else {
-        navigate('/');
+        navigate("/");
       }
 
     } catch (err) {
-      setError(err.message || 'Erro ao conectar com o servidor');
+      setError(err.message || "Erro ao conectar com o servidor");
     } finally {
       setLoading(false);
     }
