@@ -89,6 +89,13 @@
   margin-top: 2px;
 }
 
+.sidebar-profile-role {
+  font-size: 13px;
+  color: rgba(117, 170, 219, 0.95);
+  margin-top: 2px;
+  font-weight: 600;
+}
+
 /* navegação */
 .sidebar nav {
   display: flex;

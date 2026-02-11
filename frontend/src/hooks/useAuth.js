@@ -4,7 +4,7 @@ import { login as apiLogin, logout as apiLogout, getToken } from "../services/ap
 
 export default function useAuth() {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
+    const stored = sessionStorage.getItem("user") || localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(false);
@@ -28,6 +28,9 @@ export default function useAuth() {
   const logout = useCallback(() => {
     apiLogout();
     setUser(null);
+    sessionStorage.removeItem("user");
+    // compat
+    localStorage.removeItem("user");
   }, []);
 
   const isAuthenticated = !!user;

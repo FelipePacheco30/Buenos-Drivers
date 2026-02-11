@@ -13,6 +13,7 @@ import TripsController from '../modules/trips/controller.js';
 import PaymentsController from '../modules/payments/controller.js';
 import ReputationController from '../modules/reputation/controller.js';
 import NotificationsController from '../modules/notifications/controller.js';
+import MessagesController from '../modules/messages/controller.js';
 
 const routes = Router();
 
@@ -77,6 +78,75 @@ routes.get(
   '/drivers/me',
   roleMiddleware('DRIVER'),
   safe(DriversController.me, 'DriversController.me')
+);
+
+/**
+ * =====================
+ * Admin: Motoristas
+ * =====================
+ */
+routes.get(
+  '/admin/drivers',
+  roleMiddleware('ADMIN'),
+  safe(DriversController.adminList, 'DriversController.adminList')
+);
+
+routes.get(
+  '/admin/drivers/:driverId',
+  roleMiddleware('ADMIN'),
+  safe(DriversController.adminDetail, 'DriversController.adminDetail')
+);
+
+/**
+ * =====================
+ * Admin: Caixa de entrada
+ * =====================
+ */
+routes.get(
+  '/admin/messages',
+  roleMiddleware('ADMIN'),
+  safe(MessagesController.adminConversations, 'MessagesController.adminConversations')
+);
+
+routes.get(
+  '/admin/messages/:driverId',
+  roleMiddleware('ADMIN'),
+  safe(MessagesController.adminThread, 'MessagesController.adminThread')
+);
+
+routes.post(
+  '/admin/messages/:driverId',
+  roleMiddleware('ADMIN'),
+  safe(MessagesController.adminSend, 'MessagesController.adminSend')
+);
+
+routes.post(
+  '/admin/messages/:driverId/system',
+  roleMiddleware('ADMIN'),
+  safe(MessagesController.adminSendSystem, 'MessagesController.adminSendSystem')
+);
+
+/**
+ * =====================
+ * Driver: Caixa de entrada (chat)
+ * =====================
+ */
+routes.get(
+  '/driver/messages',
+  roleMiddleware('DRIVER'),
+  safe(MessagesController.driverThread, 'MessagesController.driverThread')
+);
+
+routes.post(
+  '/driver/messages',
+  roleMiddleware('DRIVER'),
+  safe(MessagesController.driverSend, 'MessagesController.driverSend')
+);
+
+routes.post(
+  '/driver/messages/read',
+  roleMiddleware('DRIVER'),
+  safe(MessagesController.driverMarkRead, 'MessagesController.driverMarkRead')
 );
 
 /**

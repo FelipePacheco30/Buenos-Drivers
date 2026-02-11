@@ -7,17 +7,21 @@ let token = null;
 // -------------------- TOKEN --------------------
 export function setToken(t) {
   token = t;
-  localStorage.setItem("token", t);
+  // sessionStorage = por aba (permite admin + driver em abas diferentes)
+  sessionStorage.setItem("token", t);
+  // evita “vazamento” entre abas antigas que ainda leem localStorage
+  localStorage.removeItem("token");
 }
 
 export function getToken() {
-  if (!token) token = localStorage.getItem("token");
+  if (!token) token = sessionStorage.getItem("token") || localStorage.getItem("token");
   return token;
 }
 
 export function logout() {
   token = null;
-  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
+  localStorage.removeItem("token"); // compat (sessões antigas)
 }
 
 // -------------------- LOGIN --------------------
@@ -42,8 +46,10 @@ export async function login(email, password, role) {
   // salva token automaticamente
   setToken(data.token);
 
-  // também salva usuário no localStorage
-  localStorage.setItem("user", JSON.stringify(data.user));
+  // também salva usuário por aba
+  sessionStorage.setItem("user", JSON.stringify(data.user));
+  // evita “vazamento” entre abas antigas que ainda leem localStorage
+  localStorage.removeItem("user");
 
   return data;
 }

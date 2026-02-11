@@ -3,12 +3,14 @@ import { useAuth } from "../context/AuthContext";
 
 export default function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
+  const token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
   if (loading) {
     return <div>Carregando...</div>;
   }
 
-  if (!user) {
+  // Sem usuário OU sem token = sessão inválida (evita 403 em chamadas protegidas)
+  if (!user || !token) {
     return <Navigate to="/login" replace />;
   }
 

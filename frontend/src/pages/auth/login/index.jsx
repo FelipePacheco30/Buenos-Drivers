@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
+import { setToken as setApiToken } from "../../../services/api";
 import "./styles.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login: setAuthUser } = useAuth();
 
   const [role, setRole] = useState("DRIVER");
   const [email, setEmail] = useState("");
@@ -20,7 +23,7 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
@@ -42,14 +45,17 @@ export default function Login() {
         throw new Error(data.message || "Credenciais inválidas");
       }
 
-      // salva token e usuário (estrutura { token, user })
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.user.role);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // salva token e atualiza contexto de autenticação
+      setApiToken(data.token);
+      setAuthUser(data.user);
+
+      // também salva role separadamente (útil)
+      sessionStorage.setItem("role", data.user.role);
+      localStorage.removeItem("role");
 
       alert("Login realizado com sucesso 🚀");
 
-      // 🔥 REDIRECIONAMENTO REAL
+      // REDIRECIONAMENTO REAL
       if (data.user.role === "DRIVER") {
         navigate("/driver", { replace: true });
       } else if (data.user.role === "ADMIN") {
@@ -57,7 +63,6 @@ export default function Login() {
       } else {
         navigate("/");
       }
-
     } catch (err) {
       setError(err.message || "Erro ao conectar com o servidor");
     } finally {
@@ -67,14 +72,14 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className={`login-card ${animate ? 'show' : ''}`}>
+      <div className={`login-card ${animate ? "show" : ""}`}>
         <div className="flag-area">
           <div className="sun" />
         </div>
 
         <form className="form-area" onSubmit={handleSubmit}>
           <h2 className="title">
-            <span className="blue">Buenos</span>{' '}
+            <span className="blue">Buenos</span>{" "}
             <span className="yellow">Drivers</span>
           </h2>
 
@@ -102,23 +107,20 @@ export default function Login() {
           <label>Senha</label>
           <div className="password-wrapper">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               required
             />
-            <span
-              className="eye"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+            <span className="eye" onClick={() => setShowPassword(!showPassword)}>
               👁
             </span>
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? 'Entrando…' : 'Entrar'}
+            {loading ? "Entrando…" : "Entrar"}
           </button>
 
           {error && <div className="error-message">{error}</div>}

@@ -6,6 +6,8 @@ import {
   FiUser,
   FiHome,
   FiLogOut,
+  FiUsers,
+  FiClipboard,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -15,6 +17,8 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
+  const isDriver = user?.role === "DRIVER";
 
   function close() {
     setOpen(false);
@@ -26,6 +30,12 @@ export default function Sidebar() {
   }
 
   function handleLogout() {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("role");
+    sessionStorage.removeItem("user");
+    // compat
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     logout();
     navigate("/login");
     close();
@@ -60,42 +70,77 @@ export default function Sidebar() {
         {/* HEADER DE PERFIL */}
         <div
           className="sidebar-profile"
-          onClick={() => goTo("/driver/account")}
+          onClick={() => (isAdmin ? goTo("/admin") : goTo("/driver/account"))}
         >
           <div className="sidebar-profile-avatar">
             <span>{initials}</span>
           </div>
           <div className="sidebar-profile-info">
             <strong className="sidebar-profile-name">
-              {user?.name || "Motorista Buenos"}
+              {user?.name || (isAdmin ? "Admin Buenos" : "Motorista Buenos")}
             </strong>
-            <span className="sidebar-profile-reputation">
-              Reputação: {reputation} ★
-            </span>
+            {isDriver ? (
+              <span className="sidebar-profile-reputation">
+                Reputação: {reputation} ★
+              </span>
+            ) : (
+              <span className="sidebar-profile-role">Administrador</span>
+            )}
           </div>
         </div>
 
         {/* NAVEGAÇÃO */}
         <nav>
-          <button onClick={() => goTo("/driver")}>
-            <FiHome />
-            Home
-          </button>
+          {isAdmin ? (
+            <>
+              <button onClick={() => goTo("/admin")}>
+                <FiHome />
+                Home
+              </button>
 
-          <button onClick={() => goTo("/driver/messages")}>
-            <FiMail />
-            Caixa de entrada
-          </button>
+              <button onClick={() => goTo("/admin/drivers")}>
+                <FiUsers />
+                Motoristas
+              </button>
 
-          <button onClick={() => goTo("/driver/wallet")}>
-            <FiDollarSign />
-            Carteira
-          </button>
+              <button onClick={() => goTo("/admin/requests")}>
+                <FiClipboard />
+                Solicitações
+              </button>
 
-          <button onClick={() => goTo("/driver/account")}>
-            <FiUser />
-            Conta
-          </button>
+              <button onClick={() => goTo("/admin/messages")}>
+                <FiMail />
+                Caixa de entrada
+              </button>
+
+              <button onClick={() => goTo("/admin/renewals")}>
+                <FiDollarSign />
+                Renovação
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => goTo("/driver")}>
+                <FiHome />
+                Home
+              </button>
+
+              <button onClick={() => goTo("/driver/messages")}>
+                <FiMail />
+                Caixa de entrada
+              </button>
+
+              <button onClick={() => goTo("/driver/wallet")}>
+                <FiDollarSign />
+                Carteira
+              </button>
+
+              <button onClick={() => goTo("/driver/account")}>
+                <FiUser />
+                Conta
+              </button>
+            </>
+          )}
 
           <button onClick={handleLogout}>
             <FiLogOut />

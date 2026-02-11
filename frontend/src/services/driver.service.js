@@ -1,9 +1,12 @@
+import { getToken } from "./api";
+
 const DriverService = {
   uploadDocument: async (formData) => {
+    const token = getToken();
     const res = await fetch("http://localhost:3333/documents", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
       body: formData,
     });
