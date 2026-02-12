@@ -1,43 +1,36 @@
 import { query } from '../../config/database.js';
 
 class TripsRepository {
-  async create(data) {
-    const {
-      driver_id,
-      user_id,
-      type,
-      amount,
-      platform_fee,
-      driver_amount,
-      status,
-    } = data;
-
+  async createAccepted({ driverId, userId, type, origin, destination, price }) {
     const { rows } = await query(
-      `INSERT INTO trips
-       (driver_id, user_id, type, amount, platform_fee, driver_amount, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
-       RETURNING *`,
-      [
-        driver_id,
-        user_id,
-        type,
-        amount,
-        platform_fee,
-        driver_amount,
-        status,
-      ]
+      `
+      INSERT INTO trips (user_id, driver_id, type, status, origin, destination, price)
+      VALUES ($1, $2, $3, 'ACCEPTED', $4, $5, $6)
+      RETURNING *
+      `,
+      [userId, driverId, type, origin, destination, price]
     );
-
     return rows[0];
   }
 
   async complete(tripId) {
-    await query(
-      `UPDATE trips
-       SET status = 'COMPLETED', completed_at = NOW()
-       WHERE id = $1`,
+    const { rows } = await query(
+      `
+      UPDATE trips
+      SET status = 'COMPLETED',
+          completed_at = NOW(),
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+      `,
       [tripId]
     );
+    return rows[0];
+  }
+
+  async findById(tripId) {
+    const { rows } = await query(`SELECT * FROM trips WHERE id = $1 LIMIT 1`, [tripId]);
+    return rows[0] || null;
   }
 
   async findByDriver(driverId) {

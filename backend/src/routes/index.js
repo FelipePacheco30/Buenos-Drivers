@@ -15,6 +15,8 @@ import ReputationController from '../modules/reputation/controller.js';
 import NotificationsController from '../modules/notifications/controller.js';
 import MessagesController from '../modules/messages/controller.js';
 import RenewalsController from '../modules/renewals/controller.js';
+import WalletController from '../modules/wallet/controller.js';
+import ReviewsController from '../modules/reviews/controller.js';
 
 const routes = Router();
 
@@ -239,6 +241,46 @@ routes.get(
   '/trips/history',
   roleMiddleware('DRIVER'),
   safe(TripsController.history, 'TripsController.history')
+);
+
+/**
+ * =====================
+ * Carteira (driver)
+ * =====================
+ */
+routes.get(
+  '/driver/wallet',
+  roleMiddleware('DRIVER'),
+  safe(WalletController.summary, 'WalletController.summary')
+);
+
+routes.post(
+  '/driver/wallet/withdraw',
+  roleMiddleware('DRIVER'),
+  safe(WalletController.withdraw, 'WalletController.withdraw')
+);
+
+/**
+ * =====================
+ * Avaliações negativas
+ * =====================
+ */
+routes.get(
+  '/driver/reviews/negative',
+  roleMiddleware('DRIVER'),
+  safe(ReviewsController.driverNegative, 'ReviewsController.driverNegative')
+);
+
+routes.get(
+  '/admin/drivers/:driverId/reviews/negative',
+  roleMiddleware('ADMIN'),
+  safe(ReviewsController.adminNegativeByDriver, 'ReviewsController.adminNegativeByDriver')
+);
+
+routes.delete(
+  '/admin/reviews/negative/:id',
+  roleMiddleware('ADMIN'),
+  safe(ReviewsController.adminDeleteNegative, 'ReviewsController.adminDeleteNegative')
 );
 
 /**

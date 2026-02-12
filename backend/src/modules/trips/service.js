@@ -1,20 +1,33 @@
 import TripsRepository from './repository.js';
+import WalletService from '../wallet/service.js';
 
 class TripsService {
-  async startTrip({ driverId, passengerUserId, type }) {
-    return TripsRepository.start({
+  async startTrip({ driverId, passengerUserId, type, price, origin, destination }) {
+    return TripsRepository.createAccepted({
       driverId,
-      passengerUserId,
+      userId: passengerUserId,
       type,
+      price,
+      origin,
+      destination,
     });
   }
 
-  async finishTrip({ driverId, distance, duration }) {
-    return TripsRepository.finish({
+  async finishTrip({ driverId, driverUserId, tripId }) {
+    const trip = await TripsRepository.findById(tripId);
+    if (!trip) throw new Error('TRIP_NOT_FOUND');
+    if (trip.driver_id !== driverId) throw new Error('TRIP_FORBIDDEN');
+    if (trip.status === 'COMPLETED') return trip;
+
+    const completed = await TripsRepository.complete(tripId);
+    await WalletService.creditTrip({
       driverId,
-      distance,
-      duration,
+      driverUserId,
+      tripId,
+      grossPrice: completed.price,
     });
+
+    return completed;
   }
 
   async history(driverId) {

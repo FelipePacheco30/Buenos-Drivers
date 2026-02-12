@@ -228,6 +228,55 @@
   background: rgba(239, 68, 68, 0.16);
 }
 
+/* AVALIAÇÕES NEGATIVAS */
+.account-negative-reviews {
+  margin-top: 22px;
+}
+
+.account-negative-reviews h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.reviews-loading,
+.reviews-empty {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+.reviews-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.16);
+  border-radius: 16px;
+  padding: 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.review-reason {
+  color: #0f1724;
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.review-date {
+  color: #64748b;
+  font-weight: 800;
+  font-size: 12px;
+}
+
 .document-card {
   background: #ffffff;
   border-radius: 16px;

@@ -22,6 +22,8 @@ export default function DriverAccount() {
   const [loadingDocs, setLoadingDocs] = useState(true);
   const [vehicles, setVehicles] = useState([]);
   const [loadingVehicles, setLoadingVehicles] = useState(true);
+  const [negativeReviews, setNegativeReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
   // mock permitido para número de viagens e tempo de conta (reputação vem real)
   const totalTrips = user?.driver?.total_trips ?? 32;
@@ -75,6 +77,26 @@ export default function DriverAccount() {
     }
   }
 
+  async function loadNegativeReviews() {
+    if (!user || user.role !== "DRIVER") {
+      setLoadingReviews(false);
+      return;
+    }
+    try {
+      setLoadingReviews(true);
+      const token = getToken();
+      const res = await fetch("http://localhost:3333/driver/reviews/negative", {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      const data = await res.json().catch(() => []);
+      setNegativeReviews(res.ok && Array.isArray(data) ? data : []);
+    } catch {
+      setNegativeReviews([]);
+    } finally {
+      setLoadingReviews(false);
+    }
+  }
+
   useEffect(() => {
     loadDocs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,6 +104,11 @@ export default function DriverAccount() {
 
   useEffect(() => {
     loadVehicles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  useEffect(() => {
+    loadNegativeReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -99,11 +126,13 @@ export default function DriverAccount() {
     if (shouldReload) {
       loadDocs();
       loadVehicles();
+      loadNegativeReviews();
       if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
       // fallback: refaz mais uma vez para ficar robusto
       reloadTimerRef.current = setTimeout(() => {
         loadDocs();
         loadVehicles();
+        loadNegativeReviews();
       }, 900);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -284,6 +313,30 @@ export default function DriverAccount() {
                   </div>
                 );
               })}
+            </div>
+          </section>
+
+          {/* AVALIAÇÕES NEGATIVAS */}
+          <section className="account-negative-reviews">
+            <h2>Avaliações negativas recentes</h2>
+
+            {loadingReviews && (
+              <p className="reviews-loading">Carregando...</p>
+            )}
+
+            {!loadingReviews && negativeReviews.length === 0 && (
+              <p className="reviews-empty">Nenhuma avaliação negativa recente.</p>
+            )}
+
+            <div className="reviews-list">
+              {negativeReviews.map((r) => (
+                <div key={r.id} className="review-card">
+                  <strong className="review-reason">{r.reason}</strong>
+                  <span className="review-date">
+                    {r.created_at ? new Date(r.created_at).toLocaleDateString() : "-"}
+                  </span>
+                </div>
+              ))}
             </div>
           </section>
         </div>

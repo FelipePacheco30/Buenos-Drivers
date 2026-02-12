@@ -104,7 +104,7 @@
   line-height: 1.35;
 }
 
-.driver-home-modal button {
+.driver-home-modal .primary-action {
   width: 100%;
   border: none;
   border-radius: 14px;
@@ -115,11 +115,17 @@
   cursor: pointer;
 }
 
-.driver-home-modal button:hover {
+.driver-home-modal .primary-action {
+  display: block;
+  margin: 0 auto;
+  width: min(280px, 100%);
+}
+
+.driver-home-modal .primary-action:hover {
   background: #fbb02a;
 }
 
-.driver-home-modal button:disabled {
+.driver-home-modal .primary-action:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -166,6 +172,207 @@
   color: #6b7280;
   font-weight: 700;
   font-size: 13px;
+}
+
+.work-pick {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.work-row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.work-row:hover {
+  background: rgba(117, 170, 219, 0.06);
+  border-radius: 14px;
+}
+
+.work-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid rgba(2, 6, 23, 0.25);
+  flex: 0 0 auto;
+}
+
+.work-dot.on {
+  border-color: rgba(252, 191, 69, 0.8);
+  background: #fcbf45;
+}
+
+.work-icon {
+  width: 20px;
+  height: 20px;
+  color: #75aadb;
+  flex: 0 0 auto;
+}
+
+.work-label {
+  font-weight: 900;
+  color: #0f1724;
+  font-size: 15px;
+}
+
+.driver-home-status {
+  position: fixed;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(520px, calc(100% - 24px));
+}
+
+.status-pill {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(2, 6, 23, 0.12);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.18);
+  border-radius: 999px;
+  padding: 10px 14px;
+  text-align: center;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.status-pill-sim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.offer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.offer-actions .btn-secondary {
+  flex: 1;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.offer-actions .btn-primary {
+  flex: 1;
+  background: #75aadb;
+  border: none;
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.rating-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.rating-row .star {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 34px;
+  font-weight: 900;
+  color: rgba(252, 191, 69, 0.45);
+  padding: 0;
+  line-height: 1;
+}
+
+.rating-row .star:hover {
+  background: transparent;
+  filter: none;
+}
+
+.rating-row .star:focus {
+  outline: none;
+}
+
+.rating-row .star.on {
+  color: #fcbf45;
+}
+
+.rating-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.rating-actions button {
+  width: min(280px, 100%);
+}
+
+/* barra de aceitar/recusar no lugar do INICIAR */
+.offer-bar {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(520px, calc(100% - 24px));
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(2, 6, 23, 0.12);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.18);
+  border-radius: 18px;
+  padding: 12px;
+}
+
+.offer-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.offer-bar-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.offer-bar-actions button {
+  flex: 1;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.offer-bar-actions .decline {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+}
+
+.offer-bar-actions .accept {
+  background: #75aadb;
+  border: none;
+  color: #ffffff;
+}
+
+.offer-bar-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ===== GANHOS ===== */

@@ -266,6 +266,175 @@ ON CONFLICT DO NOTHING;
 -- ================================
 
 -- ================================
+-- TRIPS (simulação de corridas/entregas)
+-- ================================
+
+-- ENUM: trip_type
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'trip_type') THEN
+        CREATE TYPE trip_type AS ENUM ('RIDE', 'DELIVERY');
+    END IF;
+END$$;
+
+-- ENUM: trip_status
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'trip_status') THEN
+        CREATE TYPE trip_status AS ENUM ('PENDING', 'ACCEPTED', 'COMPLETED', 'CANCELLED');
+    END IF;
+END$$;
+
+CREATE TABLE IF NOT EXISTS trips (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    driver_id UUID NOT NULL,
+    type trip_type NOT NULL,
+    status trip_status NOT NULL DEFAULT 'PENDING',
+    origin VARCHAR(255) NOT NULL,
+    destination VARCHAR(255) NOT NULL,
+    price NUMERIC(10,2) NOT NULL,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_trip_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_trip_driver
+        FOREIGN KEY (driver_id)
+        REFERENCES drivers(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_trips_driver_id ON trips(driver_id);
+CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
+CREATE INDEX IF NOT EXISTS idx_trips_created_at ON trips(created_at);
+
+-- ================================
+-- WALLET (saldo mutável do motorista)
+-- ================================
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'wallet_transaction_type') THEN
+        CREATE TYPE wallet_transaction_type AS ENUM ('CREDIT', 'DEBIT');
+    END IF;
+END$$;
+
+CREATE TABLE IF NOT EXISTS wallets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    driver_id UUID NOT NULL UNIQUE,
+    balance NUMERIC(12,2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_wallet_driver
+        FOREIGN KEY (driver_id)
+        REFERENCES drivers(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS wallet_transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    wallet_id UUID NOT NULL,
+    trip_id UUID,
+    type wallet_transaction_type NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_transaction_wallet
+        FOREIGN KEY (wallet_id)
+        REFERENCES wallets(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_transaction_trip
+        FOREIGN KEY (trip_id)
+        REFERENCES trips(id)
+        ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id
+    ON wallet_transactions(wallet_id);
+
+-- ================================
+-- AVALIAÇÕES NEGATIVAS (feedback + moderação do admin)
+-- ================================
+
+CREATE TABLE IF NOT EXISTS negative_reviews (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    driver_id UUID NOT NULL,
+    user_id UUID,
+    reason TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_neg_review_driver
+        FOREIGN KEY (driver_id)
+        REFERENCES drivers(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_neg_review_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_negative_reviews_driver_id ON negative_reviews(driver_id);
+CREATE INDEX IF NOT EXISTS idx_negative_reviews_created_at ON negative_reviews(created_at);
+
+-- ================================
+-- SEED: wallets + histórico inicial (5 corridas) + saldo ~ 50
+-- ================================
+
+INSERT INTO wallets (driver_id, balance)
+VALUES
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 50.00),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 50.00),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', 50.00),
+('dddddddd-dddd-dddd-dddd-dddddddddddd', 50.00),
+('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 50.00),
+('ffffffff-ffff-ffff-ffff-ffffffffffff', 50.00),
+('10101010-1010-1010-1010-101010101010', 50.00),
+('20202020-2020-2020-2020-202020202020', 50.00),
+('30303030-3030-3030-3030-303030303030', 50.00),
+('40404040-4040-4040-4040-404040404040', 50.00)
+ON CONFLICT (driver_id) DO NOTHING;
+
+-- 5 corridas concluídas (Henrique) para o histórico na carteira
+INSERT INTO trips (id, user_id, driver_id, type, status, origin, destination, price, completed_at)
+VALUES
+('b0b0b0b0-0000-0000-0000-000000000001','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','RIDE','COMPLETED','Centro','Palermo',10.00, NOW() - INTERVAL '5 days'),
+('b0b0b0b0-0000-0000-0000-000000000002','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','DELIVERY','COMPLETED','Recoleta','Belgrano',12.00, NOW() - INTERVAL '4 days'),
+('b0b0b0b0-0000-0000-0000-000000000003','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','RIDE','COMPLETED','San Telmo','Microcentro',9.00, NOW() - INTERVAL '3 days'),
+('b0b0b0b0-0000-0000-0000-000000000004','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','DELIVERY','COMPLETED','Caballito','Almagro',11.00, NOW() - INTERVAL '2 days'),
+('b0b0b0b0-0000-0000-0000-000000000005','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','RIDE','COMPLETED','Retiro','Puerto Madero',10.00, NOW() - INTERVAL '1 days')
+ON CONFLICT (id) DO NOTHING;
+
+-- transações CREDIT com taxa de 25% já aplicada (líquido)
+INSERT INTO wallet_transactions (wallet_id, trip_id, type, amount, created_at)
+SELECT w.id, t.id, 'CREDIT', ROUND(t.price * 0.75, 2), t.completed_at
+FROM wallets w
+JOIN trips t ON t.driver_id = w.driver_id
+WHERE w.driver_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+  AND t.id IN (
+    'b0b0b0b0-0000-0000-0000-000000000001',
+    'b0b0b0b0-0000-0000-0000-000000000002',
+    'b0b0b0b0-0000-0000-0000-000000000003',
+    'b0b0b0b0-0000-0000-0000-000000000004',
+    'b0b0b0b0-0000-0000-0000-000000000005'
+  )
+ON CONFLICT DO NOTHING;
+
+-- avaliações negativas recentes (visíveis ao motorista e ao admin)
+INSERT INTO negative_reviews (driver_id, user_id, reason, created_at)
+VALUES
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','55555555-5555-5555-5555-555555555555','Comentários inadequados durante a corrida.', NOW() - INTERVAL '3 days'),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','55555555-5555-5555-5555-555555555555','Direção agressiva (frenagens bruscas).', NOW() - INTERVAL '1 days')
+ON CONFLICT DO NOTHING;
+
+-- ================================
 -- RENEWALS (solicitações de atualização)
 -- - motorista solicita atualização de documentos e/ou adição de veículo
 -- - admin valida e aprova em /admin/renewals

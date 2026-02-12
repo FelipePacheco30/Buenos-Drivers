@@ -72,6 +72,20 @@ class DriversRepository {
 
     return rows[0];
   }
+
+  async incrementDailyEarnings(driverId, amount) {
+    const { rows } = await query(
+      `
+      UPDATE drivers
+      SET daily_earnings = COALESCE(daily_earnings, 0) + $2,
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING daily_earnings
+      `,
+      [driverId, amount]
+    );
+    return rows[0]?.daily_earnings ?? null;
+  }
 }
 
 export default new DriversRepository();

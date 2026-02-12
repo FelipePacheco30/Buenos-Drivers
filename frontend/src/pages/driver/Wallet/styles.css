@@ -1,0 +1,145 @@
+.driver-wallet {
+  min-height: 100vh;
+  background: #75aadb;
+  padding: 76px 16px 24px;
+}
+
+.wallet-header {
+  max-width: 960px;
+  margin: 0 auto 14px;
+  color: #ffffff;
+}
+
+.wallet-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.wallet-header p {
+  margin: 8px 0 0;
+  opacity: 0.95;
+  line-height: 1.35;
+}
+
+.wallet-card {
+  max-width: 960px;
+  margin: 12px auto;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.14);
+  padding: 14px;
+}
+
+.balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.balance-row strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.balance-row span {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fcbf45;
+}
+
+.trip-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trip-row {
+  border: 1px solid rgba(2, 6, 23, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(117, 170, 219, 0.06);
+}
+
+.trip-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.trip-top strong {
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.trip-top .date {
+  font-weight: 900;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.trip-bottom {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #0f1724;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.muted {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.withdraw-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.withdraw-row input {
+  border: 1px solid rgba(2, 6, 23, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+  outline: none;
+}
+
+.withdraw-row input:focus {
+  border-color: rgba(117, 170, 219, 0.6);
+  box-shadow: 0 0 0 3px rgba(117, 170, 219, 0.18);
+}
+
+.withdraw-row button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  background: #fcbf45;
+  color: #ffffff;
+}
+
+.withdraw-row button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+

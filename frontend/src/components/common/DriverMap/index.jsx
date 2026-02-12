@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
   Marker,
+  Polyline,
   ZoomControl,
 } from "react-leaflet";
 import L from "leaflet";
@@ -10,6 +11,7 @@ import "leaflet/dist/leaflet.css";
 
 import driverIconImg from "../../../assets/icons/driver.png";
 import userIconImg from "../../../assets/icons/arg.mark.png";
+import destinyIconImg from "../../../assets/icons/arg.destiny.png";
 
 /* 🇦🇷 Limites da Argentina */
 const ARGENTINA_BOUNDS = [
@@ -18,24 +20,91 @@ const ARGENTINA_BOUNDS = [
 ];
 
 /* 📍 Buenos Aires */
-const DRIVER_POSITION = [-34.6083, -58.3712];
-const USER_POSITION = [-34.6037, -58.3816];
+const DEFAULT_DRIVER_POSITION = [-34.6083, -58.3712];
 
-/* 🚗 Ícone do motorista */
-const driverIcon = new L.Icon({
-  iconUrl: driverIconImg,
-  iconSize: [44, 44],
-  iconAnchor: [22, 44],
-});
+function imageDivIcon({ src, w, h, anchorX, anchorY, className = "" }) {
+  return L.divIcon({
+    className,
+    html: `
+      <div style="width:${w}px;height:${h}px;">
+        <img
+          src="${src}"
+          style="width:100%;height:100%;display:block;object-fit:contain;"
+        />
+      </div>
+    `,
+    iconSize: [w, h],
+    iconAnchor: [anchorX, anchorY],
+  });
+}
 
-/* 📌 Ícone do usuário */
-const userIcon = new L.Icon({
-  iconUrl: userIconImg,
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-});
+/* 🚗 Ícone do motorista (rotacionável) */
+function driverDivIcon(angleDeg = 0) {
+  const w = 44;
+  const h = 44;
+  return L.divIcon({
+    className: "driver-rotated-marker",
+    html: `
+      <div style="
+        width:${w}px;height:${h}px;
+        transform: rotate(${angleDeg}deg);
+        transform-origin: 50% 50%;
+      ">
+        <img
+          src="${driverIconImg}"
+          style="width:100%;height:100%;display:block;object-fit:contain;"
+        />
+      </div>
+    `,
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h / 2],
+  });
+}
 
-export default function DriverMap() {
+/* 📌 Ícone pickup (usuário) */
+function pickupIcon() {
+  const w = 32;
+  const h = 32;
+  return imageDivIcon({
+    src: userIconImg,
+    w,
+    h,
+    anchorX: w / 2,
+    anchorY: h,
+    className: "pickup-marker",
+  });
+}
+
+/* 📍 Ícone destino */
+function destinyIcon() {
+  const w = 34;
+  const h = 34;
+  return imageDivIcon({
+    src: destinyIconImg,
+    w,
+    h,
+    anchorX: w / 2,
+    anchorY: h,
+    className: "destiny-marker",
+  });
+}
+
+export default function DriverMap({
+  driverPosition,
+  driverHeading,
+  pickupPosition,
+  destinationPosition,
+  routePositions,
+}) {
+  const driverPos = useMemo(() => driverPosition || DEFAULT_DRIVER_POSITION, [driverPosition]);
+  const heading = useMemo(
+    () => (Number.isFinite(Number(driverHeading)) ? Number(driverHeading) : 0),
+    [driverHeading]
+  );
+  const pickupPos = useMemo(() => pickupPosition || null, [pickupPosition]);
+  const destPos = useMemo(() => destinationPosition || null, [destinationPosition]);
+  const route = useMemo(() => (Array.isArray(routePositions) ? routePositions : null), [routePositions]);
+
   return (
     <div
       style={{
@@ -45,7 +114,7 @@ export default function DriverMap() {
       }}
     >
       <MapContainer
-        center={DRIVER_POSITION}
+        center={driverPos}
         zoom={15}
         minZoom={6}
         maxZoom={18}
@@ -64,10 +133,21 @@ export default function DriverMap() {
         />
 
         {/* 🚗 Motorista */}
-        <Marker position={DRIVER_POSITION} icon={driverIcon} />
+        <Marker position={driverPos} icon={driverDivIcon(heading)} />
 
-        {/* 📍 Usuário */}
-        <Marker position={USER_POSITION} icon={userIcon} />
+        {/* 📍 Pickup */}
+        {pickupPos && <Marker position={pickupPos} icon={pickupIcon()} />}
+
+        {/* 📍 Destino */}
+        {destPos && <Marker position={destPos} icon={destinyIcon()} />}
+
+        {/* rota (se houver) */}
+        {route && route.length > 1 && (
+          <Polyline
+            positions={route}
+            pathOptions={{ color: "#75aadb", weight: 6, opacity: 0.7 }}
+          />
+        )}
 
         {/* 🔍 Zoom longe da sidebar */}
         <ZoomControl position="bottomright" />

@@ -57,6 +57,8 @@ export default function AdminDrivers() {
 
   const [detail, setDetail] = useState(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [negativeReviews, setNegativeReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   useEffect(() => {
     if (!filterOpen) return;
@@ -102,6 +104,7 @@ export default function AdminDrivers() {
     async function loadDetail() {
       if (!driverId) {
         setDetail(null);
+        setNegativeReviews([]);
         return;
       }
 
@@ -124,6 +127,25 @@ export default function AdminDrivers() {
     }
 
     loadDetail();
+  }, [driverId]);
+
+  useEffect(() => {
+    async function loadNegativeReviews() {
+      if (!driverId) return;
+      try {
+        setLoadingReviews(true);
+        const token = getToken();
+        const res = await fetch(
+          `http://localhost:3333/admin/drivers/${driverId}/reviews/negative`,
+          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+        );
+        const data = await res.json().catch(() => []);
+        setNegativeReviews(res.ok && Array.isArray(data) ? data : []);
+      } finally {
+        setLoadingReviews(false);
+      }
+    }
+    loadNegativeReviews();
   }, [driverId]);
 
   const filtered = useMemo(() => {
@@ -273,6 +295,45 @@ export default function AdminDrivers() {
               >
                 Enviar mensagem automática
               </button>
+            </div>
+
+            <div className="admin-driver-section">
+              <h2>Avaliações negativas</h2>
+
+              {loadingReviews && <div className="admin-drivers-loading">Carregando...</div>}
+              {!loadingReviews && negativeReviews.length === 0 && (
+                <div className="admin-drivers-empty">Nenhuma avaliação negativa.</div>
+              )}
+
+              <div className="admin-neg-reviews">
+                {negativeReviews.map((r) => (
+                  <div key={r.id} className="admin-neg-review">
+                    <div className="admin-neg-review-top">
+                      <strong>{r.reason}</strong>
+                      <span className="pill pill-yellow">
+                        {r.created_at ? new Date(r.created_at).toLocaleDateString() : "-"}
+                      </span>
+                    </div>
+                    <button
+                      className="admin-neg-review-delete"
+                      onClick={async () => {
+                        const token = getToken();
+                        const res = await fetch(
+                          `http://localhost:3333/admin/reviews/negative/${r.id}`,
+                          {
+                            method: "DELETE",
+                            headers: { Authorization: token ? `Bearer ${token}` : "" },
+                          }
+                        );
+                        if (!res.ok) return;
+                        setNegativeReviews((prev) => prev.filter((x) => x.id !== r.id));
+                      }}
+                    >
+                      Excluir (injusta)
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

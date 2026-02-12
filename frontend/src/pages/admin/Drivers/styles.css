@@ -463,6 +463,49 @@
   cursor: not-allowed;
 }
 
+.admin-neg-reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-neg-review {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.16);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.admin-neg-review-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.admin-neg-review-top strong {
+  color: #0f1724;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.admin-neg-review-delete {
+  margin-top: 10px;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+}
+
+.admin-neg-review-delete:hover {
+  background: rgba(239, 68, 68, 0.16);
+}
+
 @media (min-width: 768px) {
   .admin-drivers-grid {
     grid-template-columns: repeat(2, 1fr);
