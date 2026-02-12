@@ -324,13 +324,21 @@
 }
 
 .admin-drivers-back {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   border: none;
   background: #fcbf45;
   color: #ffffff;
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+}
+
+.admin-drivers-back svg {
+  width: 18px;
+  height: 18px;
 }
 
 .admin-drivers-topbar-title {

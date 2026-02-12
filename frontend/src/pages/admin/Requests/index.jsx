@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiFilter } from "react-icons/fi";
+import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import "./styles.css";
 
 const MOCK_REQUESTS = [
@@ -12,6 +12,9 @@ const MOCK_REQUESTS = [
       email: "lucia.fernandez@email.com",
       city: "Buenos Aires",
     },
+    vehicles: [
+      { id: "v-1", kind: "CAR", brand: "Toyota", model: "Corolla", year: 2019, color: "Prata", plate: "LU123AB" },
+    ],
     documents: [
       { type: "CNH", issued_at: "2024-01-10", expires_at: "2028-01-10" },
       { type: "CRLV", issued_at: "2025-03-01", expires_at: "2026-03-01" },
@@ -26,6 +29,10 @@ const MOCK_REQUESTS = [
       email: "matias.gomez@email.com",
       city: "La Plata",
     },
+    vehicles: [
+      { id: "v-2", kind: "MOTO", brand: "Honda", model: "CG 160", year: 2021, color: "Preto", plate: "MA456CD" },
+      { id: "v-3", kind: "CAR", brand: "Chevrolet", model: "Onix", year: 2020, color: "Branco", plate: "MA789EF" },
+    ],
     documents: [
       { type: "CNH", issued_at: "2023-05-12", expires_at: "2027-05-12" },
       { type: "CRLV", issued_at: "2025-02-01", expires_at: "2026-02-14" },
@@ -40,6 +47,9 @@ const MOCK_REQUESTS = [
       email: "sofia.martinez@email.com",
       city: "Buenos Aires",
     },
+    vehicles: [
+      { id: "v-4", kind: "CAR", brand: "Renault", model: "Kwid", year: 2022, color: "Vermelho", plate: "SO321GH" },
+    ],
     documents: [
       { type: "CNH", issued_at: "2022-11-20", expires_at: "2026-11-20" },
       { type: "CRLV", issued_at: "2025-04-10", expires_at: "2026-04-10" },
@@ -101,7 +111,10 @@ export default function AdminRequests() {
     // filtros por checkbox (whatsapp-like)
     list = list.filter((r) => {
       const validated = validatedByRequest[r.id] || {};
-      const done = r.documents.every((d) => !!validated[d.type]);
+      const docsOk = r.documents.every((d) => !!validated[`doc:${d.type}`]);
+      const vehicles = Array.isArray(r.vehicles) ? r.vehicles : [];
+      const vehiclesOk = vehicles.length > 0 ? vehicles.every((v) => !!validated[`veh:${v.id}`]) : false;
+      const done = docsOk && vehiclesOk;
       if (done) return !!statusFilters.validated;
       return !!statusFilters.pending;
     });
@@ -120,15 +133,24 @@ export default function AdminRequests() {
 
   if (requestId) {
     const validated = validatedByRequest[requestId] || {};
-    const allValidated = selected
-      ? selected.documents.every((d) => !!validated[d.type])
+    const allVehiclesValidated = selected
+      ? (Array.isArray(selected.vehicles) ? selected.vehicles : []).every((v) => !!validated[`veh:${v.id}`])
       : false;
+    const allDocsValidated = selected
+      ? selected.documents.every((d) => !!validated[`doc:${d.type}`])
+      : false;
+    const allOk = allDocsValidated && allVehiclesValidated;
 
     return (
       <div className="admin-requests">
         <div className="admin-requests-topbar">
-          <button className="admin-requests-back" onClick={() => navigate("/admin/requests")}>
-            Voltar
+          <button
+            className="admin-requests-back"
+            onClick={() => navigate("/admin/requests")}
+            aria-label="Voltar"
+            title="Voltar"
+          >
+            <FiArrowLeft />
           </button>
           <div className="admin-requests-topbar-title">Solicitação</div>
         </div>
@@ -163,7 +185,7 @@ export default function AdminRequests() {
               <h2>Documentos</h2>
               <div className="admin-request-docs">
                 {selected.documents.map((doc) => {
-                  const ok = !!validated[doc.type];
+                  const ok = !!validated[`doc:${doc.type}`];
                   return (
                     <div key={doc.type} className="admin-request-doc">
                       <div className="admin-request-doc-top">
@@ -187,7 +209,10 @@ export default function AdminRequests() {
                             onClick={() =>
                               setValidatedByRequest((prev) => ({
                                 ...prev,
-                                [requestId]: { ...(prev[requestId] || {}), [doc.type]: true },
+                                [requestId]: {
+                                  ...(prev[requestId] || {}),
+                                  [`doc:${doc.type}`]: true,
+                                },
                               }))
                             }
                           >
@@ -209,9 +234,59 @@ export default function AdminRequests() {
                 })}
               </div>
 
+              <h2 style={{ marginTop: 16 }}>Veículos</h2>
+              <div className="admin-request-docs">
+                {(selected.vehicles || []).map((v) => {
+                  const ok = !!validated[`veh:${v.id}`];
+                  return (
+                    <div key={v.id} className="admin-request-doc">
+                      <div className="admin-request-doc-top">
+                        <div className="admin-request-doc-title">
+                          <strong>
+                            {v.kind === "MOTO" ? "Moto" : "Carro"} • {v.brand} {v.model}
+                          </strong>
+                          {ok && <span className="doc-check">✓</span>}
+                        </div>
+                        <div className="admin-request-doc-actions">
+                          <button
+                            className="btn-secondary"
+                            onClick={() => alert("Visualização do veículo será implementada depois.")}
+                          >
+                            Ver
+                          </button>
+                          <button
+                            className={`btn-primary ${ok ? "ok" : ""}`}
+                            onClick={() =>
+                              setValidatedByRequest((prev) => ({
+                                ...prev,
+                                [requestId]: {
+                                  ...(prev[requestId] || {}),
+                                  [`veh:${v.id}`]: true,
+                                },
+                              }))
+                            }
+                          >
+                            Validar
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="admin-request-doc-dates">
+                        <span>
+                          Placa: <strong>{v.plate}</strong>
+                        </span>
+                        <span>
+                          {v.color} • <strong>{v.year}</strong>
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               <button
                 className="admin-request-accept"
-                disabled={!allValidated}
+                disabled={!allOk}
                 onClick={() =>
                   alert("Aceitar motorista (ação será implementada depois).")
                 }

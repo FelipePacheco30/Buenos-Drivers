@@ -1,6 +1,7 @@
 import DriversService from './service.js';
 import DriversRepository from './repository.js';
 import DocumentsRepository from '../documents/repository.js';
+import VehiclesRepository from '../vehicles/repository.js';
 
 class DriversController {
   /**
@@ -51,7 +52,8 @@ class DriversController {
       }
 
       const documents = await DocumentsRepository.findByDriverId(driverId);
-      return res.json({ ...driver, documents });
+      const vehicles = await VehiclesRepository.findByUserId(driver.user_id);
+      return res.json({ ...driver, documents, vehicles });
     } catch (err) {
       next(err);
     }

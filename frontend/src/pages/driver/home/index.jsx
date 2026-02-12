@@ -485,6 +485,14 @@ export default function DriverHome() {
         <>
           <div className="driver-home-modal-overlay" onClick={() => setShowModeModal(false)} />
           <div className="driver-home-modal" role="dialog" aria-modal="true">
+            <button
+              className="modal-x"
+              type="button"
+              aria-label="Fechar"
+              onClick={() => setShowModeModal(false)}
+            >
+              ×
+            </button>
             <h2>Tipo de trabalho</h2>
             <p>Escolha o que você quer fazer agora.</p>
 
@@ -511,7 +519,7 @@ export default function DriverHome() {
             </div>
 
             <button
-              className="primary-action"
+              className="primary-action primary-action-small"
               onClick={beginSearch}
               disabled={!work.delivery && !work.ride}
             >

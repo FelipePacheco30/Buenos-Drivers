@@ -25,6 +25,7 @@ class DriversRepository {
         u.city,
         u.status AS user_status,
         u.reputation_score,
+        (SELECT COUNT(*)::int FROM vehicles v WHERE v.user_id = u.id) AS vehicles_count,
         COALESCE(SUM(CASE WHEN d.status = 'VALID' THEN 1 ELSE 0 END), 0) AS docs_valid,
         COALESCE(SUM(CASE WHEN d.status = 'EXPIRING' THEN 1 ELSE 0 END), 0) AS docs_expiring,
         COALESCE(SUM(CASE WHEN d.status = 'EXPIRED' THEN 1 ELSE 0 END), 0) AS docs_expired,

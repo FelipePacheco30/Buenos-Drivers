@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import { getToken } from "../../../services/api";
 import useWebSocket from "../../../hooks/useWebSocket";
+import { FiArrowLeft } from "react-icons/fi";
 import "./styles.css";
 
 export default function AdminRenewals() {
@@ -124,8 +125,13 @@ export default function AdminRenewals() {
     return (
       <div className="admin-renewals">
         <div className="admin-renewals-topbar">
-          <button className="admin-renewals-back" onClick={() => navigate("/admin/renewals")}>
-            Voltar
+          <button
+            className="admin-renewals-back"
+            onClick={() => navigate("/admin/renewals")}
+            aria-label="Voltar"
+            title="Voltar"
+          >
+            <FiArrowLeft />
           </button>
           <div className="admin-renewals-topbar-title">Renovação</div>
         </div>

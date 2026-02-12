@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiFilter } from "react-icons/fi";
+import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import { getToken } from "../../../services/api";
 import "./styles.css";
 
@@ -182,8 +182,13 @@ export default function AdminDrivers() {
     return (
       <div className="admin-drivers">
         <div className="admin-drivers-topbar">
-          <button className="admin-drivers-back" onClick={() => navigate("/admin/drivers")}>
-            Voltar
+          <button
+            className="admin-drivers-back"
+            onClick={() => navigate("/admin/drivers")}
+            aria-label="Voltar"
+            title="Voltar"
+          >
+            <FiArrowLeft />
           </button>
           <div className="admin-drivers-topbar-title">Motorista</div>
         </div>
@@ -295,6 +300,33 @@ export default function AdminDrivers() {
               >
                 Enviar mensagem automática
               </button>
+            </div>
+
+            <div className="admin-driver-section">
+              <h2>Veículos</h2>
+              <div className="admin-docs">
+                {(detail.vehicles || []).length === 0 && (
+                  <div className="admin-drivers-empty">Nenhum veículo cadastrado.</div>
+                )}
+                {(detail.vehicles || []).map((v) => (
+                  <div key={v.id} className="admin-doc">
+                    <div className="admin-doc-top">
+                      <strong>
+                        {v.kind === "MOTO" ? "Moto" : "Carro"} • {v.brand} {v.model}
+                      </strong>
+                      <span className="pill pill-blue">{v.plate}</span>
+                    </div>
+                    <div className="admin-doc-dates">
+                      <span>
+                        Cor: <strong>{v.color}</strong>
+                      </span>
+                      <span>
+                        Ano: <strong>{v.year}</strong>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="admin-driver-section">
@@ -452,7 +484,11 @@ export default function AdminDrivers() {
                     <span className={`state-tag ${cls}`}>{label}</span>
                   </div>
                 </div>
-                <div className="admin-driver-row-bottom">{d.email}</div>
+                <div className="admin-driver-row-bottom">
+                  {d.email}
+                  <span className="sep">•</span>
+                  Veículos: <strong>{d.vehicles_count ?? 0}</strong>
+                </div>
               </div>
             </button>
           );
