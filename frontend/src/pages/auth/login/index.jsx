@@ -53,8 +53,6 @@ export default function Login() {
       sessionStorage.setItem("role", data.user.role);
       localStorage.removeItem("role");
 
-      alert("Login realizado com sucesso 🚀");
-
       // REDIRECIONAMENTO REAL
       if (data.user.role === "DRIVER") {
         if (data.user.status === "BANNED") {

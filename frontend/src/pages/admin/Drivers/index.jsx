@@ -214,7 +214,13 @@ export default function AdminDrivers() {
                 {(detail.documents || []).map((doc) => (
                   <div key={doc.id} className={`admin-doc ${statusClass(doc.status)}`}>
                     <div className="admin-doc-top">
-                      <strong>{doc.type}</strong>
+                      <strong>
+                        {doc.type === "CRLV"
+                          ? `CRLV${doc.vehicle_plate ? ` (${doc.vehicle_plate})` : ""}`
+                          : doc.type === "CRIMINAL_RECORD"
+                            ? "Histórico criminal"
+                            : doc.type}
+                      </strong>
                       <span className={`pill ${statusClass(doc.status)}`}>{statusLabel(doc.status)}</span>
                     </div>
                     <div className="admin-doc-dates">

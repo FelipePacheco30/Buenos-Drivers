@@ -119,6 +119,55 @@
   background: #fbb02a;
 }
 
+.driver-home-modal button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vehicle-pick-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vehicle-pick {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  background: rgba(117, 170, 219, 0.06);
+  cursor: pointer;
+}
+
+.vehicle-pick.active {
+  border-color: rgba(252, 191, 69, 0.8);
+  box-shadow: 0 0 0 3px rgba(252, 191, 69, 0.22);
+}
+
+.vehicle-pick input {
+  margin-top: 4px;
+}
+
+.vehicle-pick-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vehicle-pick-main strong {
+  color: #0f1724;
+  font-weight: 900;
+}
+
+.vehicle-pick-main span {
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 13px;
+}
+
 /* ===== GANHOS ===== */
 .earnings-box {
   position: fixed;
@@ -157,6 +206,12 @@
   justify-content: center;
 
   animation: pulse 1.8s infinite;
+}
+
+.startButton:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  animation: none;
 }
 
 .startButton:hover {

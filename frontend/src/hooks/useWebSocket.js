@@ -1,51 +1,127 @@
 // hooks/useWebSocket.js
-import { useEffect, useRef, useState } from "react";
+// Conexão WS compartilhada (singleton) para evitar múltiplas conexões
+// e perda de eventos quando páginas montam/desmontam.
+import { useEffect, useState } from "react";
 
-export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
-  const [events, setEvents] = useState([]);
-  const wsRef = useRef(null);
-  const reconnectRef = useRef(null);
+let sharedWs = null;
+let sharedBaseUrl = null;
+let sharedUserId = null;
+let reconnectTimer = null;
+let isConnecting = false;
+let sharedEvents = [];
+const subscribers = new Set();
 
-  useEffect(() => {
-    const userRaw = sessionStorage.getItem("user") || localStorage.getItem("user");
-    const user = userRaw ? JSON.parse(userRaw) : null;
-    const userId = user?.id;
-    if (!userId) return;
+function notify() {
+  const snapshot = sharedEvents;
+  subscribers.forEach((fn) => fn(snapshot));
+}
 
-    function connect() {
-      const ws = new WebSocket(`${baseUrl}?user_id=${encodeURIComponent(userId)}`);
-      wsRef.current = ws;
+function getUserIdFromStorage() {
+  const userRaw = sessionStorage.getItem("user") || localStorage.getItem("user");
+  const user = userRaw ? JSON.parse(userRaw) : null;
+  return user?.id || null;
+}
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          setEvents((prev) => [...prev, data]);
-        } catch {
-          // ignora
-        }
-      };
+function connect(baseUrl, userId) {
+  if (!baseUrl || !userId) return;
+  if (isConnecting) return;
+  isConnecting = true;
 
-      ws.onclose = () => {
-        // tenta reconectar de forma simples
-        reconnectRef.current = setTimeout(connect, 1200);
-      };
-
-      ws.onerror = () => {
-        // erro pode disparar close em seguida
-      };
+  try {
+    if (sharedWs) {
+      try {
+        sharedWs.close();
+      } catch {
+        // ignore
+      }
+      sharedWs = null;
     }
 
-    connect();
+    const ws = new WebSocket(`${baseUrl}?user_id=${encodeURIComponent(userId)}`);
+    sharedWs = ws;
+    sharedBaseUrl = baseUrl;
+    sharedUserId = userId;
+
+    ws.onopen = () => {
+      isConnecting = false;
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        sharedEvents = [...sharedEvents, data].slice(-300);
+        notify();
+      } catch {
+        // ignora
+      }
+    };
+
+    ws.onclose = () => {
+      isConnecting = false;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(() => {
+        const uid = getUserIdFromStorage();
+        if (!uid) return;
+        connect(sharedBaseUrl || baseUrl, uid);
+      }, 1200);
+    };
+
+    ws.onerror = () => {
+      // erro geralmente dispara onclose em seguida
+    };
+  } catch {
+    isConnecting = false;
+  }
+}
+
+function ensureConnected(baseUrl) {
+  const userId = getUserIdFromStorage();
+  if (!userId) return;
+
+  const mustReconnect =
+    !sharedWs ||
+    sharedWs.readyState === WebSocket.CLOSED ||
+    sharedWs.readyState === WebSocket.CLOSING ||
+    sharedBaseUrl !== baseUrl ||
+    sharedUserId !== userId;
+
+  if (mustReconnect) connect(baseUrl, userId);
+}
+
+export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
+  const [events, setEvents] = useState(sharedEvents);
+
+  useEffect(() => {
+    ensureConnected(baseUrl);
+
+    const sub = (evs) => setEvents(evs);
+    subscribers.add(sub);
+    // entrega snapshot atual
+    sub(sharedEvents);
 
     return () => {
-      if (reconnectRef.current) clearTimeout(reconnectRef.current);
-      if (wsRef.current) wsRef.current.close();
+      subscribers.delete(sub);
+      // opcional: se não há mais ninguém usando, fecha a conexão
+      if (subscribers.size === 0) {
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+        if (sharedWs) {
+          try {
+            sharedWs.close();
+          } catch {
+            // ignore
+          }
+        }
+        sharedWs = null;
+        sharedBaseUrl = null;
+        sharedUserId = null;
+      }
     };
   }, [baseUrl]);
 
   const sendMessage = (msg) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(msg));
+    if (sharedWs && sharedWs.readyState === WebSocket.OPEN) {
+      sharedWs.send(JSON.stringify(msg));
       return true;
     }
     return false;

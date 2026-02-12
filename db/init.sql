@@ -109,7 +109,8 @@ CREATE TABLE IF NOT EXISTS vehicles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
     plate VARCHAR(16) NOT NULL UNIQUE,
-    brand VARCHAR(80),
+    brand VARCHAR(80) NOT NULL,
+    kind VARCHAR(10) NOT NULL DEFAULT 'CAR',
     model VARCHAR(120) NOT NULL,
     year INTEGER NOT NULL,
     color VARCHAR(40) NOT NULL,
@@ -127,20 +128,20 @@ CREATE INDEX IF NOT EXISTS idx_vehicles_user_id ON vehicles(user_id);
 -- SEED VEHICLES (cada motorista tem ao menos 1; alguns terão 2)
 INSERT INTO vehicles (id, user_id, plate, brand, model, year, color)
 VALUES
-('a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1','22222222-2222-2222-2222-222222222222','AAA1A11','Toyota','Corolla',2019,'Prata'),
-('b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1','33333333-3333-3333-3333-333333333333','BBB2B22','Volkswagen','Gol',2018,'Branco'),
-('c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1','44444444-4444-4444-4444-444444444444','CCC3C33','Renault','Kwid',2020,'Vermelho'),
-('d1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1','66666666-6666-6666-6666-666666666666','DDD4D44','Chevrolet','Onix',2021,'Azul'),
-('e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1','77777777-7777-7777-7777-777777777777','EEE5E55','Fiat','Argo',2019,'Preto'),
-('f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1','88888888-8888-8888-8888-888888888888','FFF6F66','Peugeot','208',2022,'Cinza'),
-('10101010-aaaa-bbbb-cccc-101010101010','99999999-9999-9999-9999-999999999999','GGG7G77','Honda','City',2020,'Branco'),
-('20202020-aaaa-bbbb-cccc-202020202020','12121212-1212-1212-1212-121212121212','HHH8H88','Nissan','Versa',2017,'Preto'),
-('30303030-aaaa-bbbb-cccc-303030303030','13131313-1313-1313-1313-131313131313','III9I99','Ford','Ka',2018,'Prata'),
-('40404040-aaaa-bbbb-cccc-404040404040','14141414-1414-1414-1414-141414141414','JJJ1J11','Hyundai','HB20',2021,'Azul'),
+('a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1','22222222-2222-2222-2222-222222222222','RA482JL','Toyota','Corolla',2019,'Prata'),
+('b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1','33333333-3333-3333-3333-333333333333','HN193QW','Volkswagen','Gol',2018,'Branco'),
+('c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1','44444444-4444-4444-4444-444444444444','AN705PC','Renault','Kwid',2020,'Vermelho'),
+('d1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1','66666666-6666-6666-6666-666666666666','LU318DM','Chevrolet','Onix',2021,'Azul'),
+('e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1','77777777-7777-7777-7777-777777777777','DG640TR','Fiat','Argo',2019,'Preto'),
+('f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1','88888888-8888-8888-8888-888888888888','SF257VK','Peugeot','208',2022,'Cinza'),
+('10101010-aaaa-bbbb-cccc-101010101010','99999999-9999-9999-9999-999999999999','VL861NZ','Honda','City',2020,'Branco'),
+('20202020-aaaa-bbbb-cccc-202020202020','12121212-1212-1212-1212-121212121212','JU094HB','Nissan','Versa',2017,'Preto'),
+('30303030-aaaa-bbbb-cccc-303030303030','13131313-1313-1313-1313-131313131313','MT573GX','Ford','Ka',2018,'Prata'),
+('40404040-aaaa-bbbb-cccc-404040404040','14141414-1414-1414-1414-141414141414','CM226FD','Hyundai','HB20',2021,'Azul'),
 
 -- segundo veículo (para testar escolha antes de iniciar)
-('50505050-aaaa-bbbb-cccc-505050505050','33333333-3333-3333-3333-333333333333','KKA2K22','Volkswagen','Polo',2021,'Cinza'),
-('60606060-aaaa-bbbb-cccc-606060606060','88888888-8888-8888-8888-888888888888','LLL6L99','Citroën','C3',2020,'Vermelho')
+('50505050-aaaa-bbbb-cccc-505050505050','33333333-3333-3333-3333-333333333333','HP417KS','Volkswagen','Polo',2021,'Cinza'),
+('60606060-aaaa-bbbb-cccc-606060606060','88888888-8888-8888-8888-888888888888','SO908TN','Citroën','C3',2020,'Vermelho')
 ON CONFLICT (id) DO NOTHING;
 
 -- ENUM: document_type
@@ -326,7 +327,8 @@ CREATE TABLE IF NOT EXISTS renewal_vehicle_add (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     renewal_id UUID NOT NULL UNIQUE,
     plate VARCHAR(16) NOT NULL,
-    brand VARCHAR(80),
+    brand VARCHAR(80) NOT NULL,
+    kind VARCHAR(10) NOT NULL DEFAULT 'CAR',
     model VARCHAR(120) NOT NULL,
     year INTEGER NOT NULL,
     color VARCHAR(40) NOT NULL,

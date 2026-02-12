@@ -14,6 +14,7 @@ import PaymentsController from '../modules/payments/controller.js';
 import ReputationController from '../modules/reputation/controller.js';
 import NotificationsController from '../modules/notifications/controller.js';
 import MessagesController from '../modules/messages/controller.js';
+import RenewalsController from '../modules/renewals/controller.js';
 
 const routes = Router();
 
@@ -151,6 +152,17 @@ routes.post(
 
 /**
  * =====================
+ * Driver: Renovação (solicitações)
+ * =====================
+ */
+routes.post(
+  '/driver/renewals',
+  roleMiddleware('DRIVER'),
+  safe(RenewalsController.driverCreate, 'RenewalsController.driverCreate')
+);
+
+/**
+ * =====================
  * Veículos
  * =====================
  */
@@ -181,6 +193,29 @@ routes.get(
   '/documents',
   roleMiddleware('DRIVER'),
   safe(DocumentsController.list, 'DocumentsController.list')
+);
+
+/**
+ * =====================
+ * Admin: Renovação (solicitações)
+ * =====================
+ */
+routes.get(
+  '/admin/renewals',
+  roleMiddleware('ADMIN'),
+  safe(RenewalsController.adminList, 'RenewalsController.adminList')
+);
+
+routes.get(
+  '/admin/renewals/:renewalId',
+  roleMiddleware('ADMIN'),
+  safe(RenewalsController.adminDetail, 'RenewalsController.adminDetail')
+);
+
+routes.post(
+  '/admin/renewals/:renewalId/approve',
+  roleMiddleware('ADMIN'),
+  safe(RenewalsController.adminApprove, 'RenewalsController.adminApprove')
 );
 
 /**

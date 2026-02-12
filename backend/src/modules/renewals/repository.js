@@ -25,17 +25,34 @@ class RenewalsRepository {
     return rows[0];
   }
 
-  async addVehicleAdd({ renewalId, plate, brand, model, year, color, crlvIssuedAt, crlvExpiresAt }) {
-    const { rows } = await query(
-      `
-      INSERT INTO renewal_vehicle_add
-        (renewal_id, plate, brand, model, year, color, crlv_issued_at, crlv_expires_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *
-      `,
-      [renewalId, plate, brand || null, model, year, color, crlvIssuedAt, crlvExpiresAt]
-    );
-    return rows[0];
+  async addVehicleAdd({ renewalId, plate, brand, kind, model, year, color, crlvIssuedAt, crlvExpiresAt }) {
+    // compat: se o banco ainda não tiver coluna "kind", faz fallback sem ela
+    try {
+      const { rows } = await query(
+        `
+        INSERT INTO renewal_vehicle_add
+          (renewal_id, plate, brand, kind, model, year, color, crlv_issued_at, crlv_expires_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING *
+        `,
+        [renewalId, plate, brand, kind, model, year, color, crlvIssuedAt, crlvExpiresAt]
+      );
+      return rows[0];
+    } catch (e) {
+      const code = e?.code;
+      // 42703: undefined_column
+      if (code !== '42703') throw e;
+      const { rows } = await query(
+        `
+        INSERT INTO renewal_vehicle_add
+          (renewal_id, plate, brand, model, year, color, crlv_issued_at, crlv_expires_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *
+        `,
+        [renewalId, plate, brand, model, year, color, crlvIssuedAt, crlvExpiresAt]
+      );
+      return rows[0];
+    }
   }
 
   async listForAdmin() {
@@ -121,6 +138,18 @@ class RenewalsRepository {
       [id, status]
     );
     return rows[0];
+  }
+
+  async deleteOlderThanDays(days) {
+    const d = Number(days);
+    const { rowCount } = await query(
+      `
+      DELETE FROM renewals
+      WHERE created_at < NOW() - ($1::int * INTERVAL '1 day')
+      `,
+      [d]
+    );
+    return rowCount || 0;
   }
 }
 

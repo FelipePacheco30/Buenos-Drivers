@@ -91,6 +91,15 @@ export function broadcast(payload) {
   });
 }
 
+export function broadcastToRole(role, payload) {
+  clients.forEach(({ ws, user }) => {
+    if (user?.role !== role) return;
+    if (ws.readyState === ws.OPEN) {
+      ws.send(JSON.stringify(payload));
+    }
+  });
+}
+
 export function getConnectedUsers() {
   return Array.from(clients.values()).map((c) => c.user);
 }

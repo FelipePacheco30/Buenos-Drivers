@@ -11,6 +11,7 @@ import DriverAccount from "../pages/driver/Account";
 import DriverMessages from "../pages/driver/Messages";
 import DriverWallet from "../pages/driver/Wallet";
 import DriverTest from "../pages/driver/Test";
+import DriverRenewals from "../pages/driver/Renewals";
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminDrivers from "../pages/admin/Drivers";
 import AdminRequests from "../pages/admin/Requests";
@@ -43,6 +44,7 @@ export default function AppRoutes() {
           <Route path="account" element={<DriverAccount />} />
           <Route path="messages" element={<DriverMessages />} />
           <Route path="wallet" element={<DriverWallet />} />
+          <Route path="renewals" element={<DriverRenewals />} />
         </Route>
 
         {/* ROTAS PROTEGIDAS ADMIN */}
@@ -62,6 +64,7 @@ export default function AppRoutes() {
           <Route path="messages" element={<AdminMessages />} />
           <Route path="messages/:driverId" element={<AdminMessages />} />
           <Route path="renewals" element={<AdminRenewals />} />
+          <Route path="renewals/:renewalId" element={<AdminRenewals />} />
         </Route>
       </Routes>
     </BrowserRouter>

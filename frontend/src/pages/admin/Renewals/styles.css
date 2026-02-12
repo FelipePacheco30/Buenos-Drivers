@@ -5,74 +5,174 @@
   padding: 6px 0 26px;
 }
 
-.admin-renewals-hero {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #ffffff;
-  padding: 20px 16px 16px;
-  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.06);
-  border: 1px solid rgba(2, 6, 23, 0.04);
+.admin-renewals-header h1 {
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f1724;
+  margin: 0;
 }
 
-.admin-renewals-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(117, 170, 219, 0.14),
-    rgba(255, 255, 255, 1) 55%
-  );
-  pointer-events: none;
+.admin-renewals-subtitle {
+  margin-top: 8px;
+  color: #6b7280;
 }
 
-.admin-renewals-hero > * {
-  position: relative;
-  z-index: 2;
-}
-
-.admin-renewals-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
+.admin-renewals-retention {
+  margin-top: 10px;
+  color: #0f1724;
   background: rgba(252, 191, 69, 0.18);
   border: 1px solid rgba(252, 191, 69, 0.28);
-  color: #0b1220;
-  font-weight: 900;
-  font-size: 12px;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 700;
 }
 
-.admin-renewals-hero h1 {
-  margin: 10px 0 8px;
-  font-size: 28px;
+.admin-renewals-toolbar {
+  margin-top: 16px;
+  background: rgba(117, 170, 219, 0.1);
+  border: 1px solid rgba(117, 170, 219, 0.18);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.admin-renewals-search {
+  width: 100%;
+  border: 1px solid rgba(2, 6, 23, 0.1);
+  border-radius: 14px;
+  padding: 12px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.admin-renewals-search:focus {
+  border-color: rgba(117, 170, 219, 0.6);
+  box-shadow: 0 0 0 3px rgba(117, 170, 219, 0.18);
+}
+
+.state {
+  margin-top: 12px;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.admin-renewals-list {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.admin-renewal-row {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(2, 6, 23, 0.14);
+  background: #ffffff;
+  border-radius: 0;
+  padding: 22px 18px;
+  cursor: pointer;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.08);
+  min-height: 108px;
+}
+
+.admin-renewal-row:hover {
+  background: rgba(117, 170, 219, 0.06);
+}
+
+.admin-renewal-row-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: rgba(117, 170, 219, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #075985;
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+.admin-renewal-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-renewal-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-renewal-row-name {
+  color: #0f1724;
+  font-weight: 900;
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-renewal-row-date {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.admin-renewal-row-bottom {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* DETAIL (copiado do padrão de Solicitações) */
+.admin-renewals-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.admin-renewals-back {
+  border: none;
+  background: #fcbf45;
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.admin-renewals-topbar-title {
   font-weight: 900;
   color: #0f1724;
 }
 
-.admin-renewals-hero p {
-  margin: 0;
-  color: #6b7280;
-  line-height: 1.45;
-}
-
-.admin-renewals-card {
-  margin-top: 16px;
+.admin-renewal-detail {
   background: #ffffff;
   border-radius: 18px;
-  border: 2px solid rgba(117, 170, 219, 0.16);
+  border: 1px solid rgba(2, 6, 23, 0.06);
   box-shadow: 0 16px 34px rgba(2, 6, 23, 0.08);
   padding: 14px;
+}
+
+.admin-renewal-header {
   display: flex;
   gap: 12px;
   align-items: flex-start;
 }
 
-.admin-renewals-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+.admin-renewal-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
   background: rgba(117, 170, 219, 0.18);
   display: flex;
   align-items: center;
@@ -81,16 +181,173 @@
   color: #075985;
 }
 
-.admin-renewals-card-content strong {
+.admin-renewal-name {
+  font-weight: 900;
+  color: #0f1724;
+  font-size: 18px;
+}
+
+.admin-renewal-sub {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-renewal-section {
+  margin-top: 16px;
+}
+
+.admin-renewal-section h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.admin-renewal-docs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-renewal-doc {
+  background: rgba(117, 170, 219, 0.06);
+  border-radius: 16px;
+  padding: 12px;
+  border: 1px solid rgba(2, 6, 23, 0.06);
+}
+
+.admin-renewal-doc-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-renewal-doc-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(22, 163, 74, 0.22);
+  color: #15803d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.admin-renewal-doc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-secondary {
+  border: 1px solid rgba(2, 6, 23, 0.12);
+  background: #ffffff;
+  color: #0f1724;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn-primary {
+  border: none;
+  background: #75aadb;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn-primary.ok {
+  background: #16a34a;
+}
+
+.admin-renewal-doc-dates {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #4b5563;
+  font-size: 13px;
+}
+
+.admin-renewal-accept {
+  margin-top: 14px;
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  background: #fcbf45;
+  color: #ffffff;
+  font-weight: 900;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.admin-renewal-accept:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+}
+
+.pill-blue {
+  background: rgba(117, 170, 219, 0.14);
+  color: #075985;
+}
+
+.pill-yellow {
+  background: rgba(252, 191, 69, 0.2);
+  color: #0b1220;
+}
+
+.vehicle-box {
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(117, 170, 219, 0.06);
+}
+
+.vehicle-box strong {
   display: block;
   color: #0f1724;
   font-weight: 900;
 }
 
-.admin-renewals-card-content span {
+.vehicle-box span {
   display: block;
   margin-top: 6px;
-  color: #6b7280;
-  line-height: 1.45;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+@media (min-width: 980px) {
+  .admin-renewals-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .admin-renewal-detail {
+    padding: 18px;
+  }
 }
 
