@@ -7,7 +7,7 @@ import MessagesService from '../modules/messages/service.js';
  * - verifica documentos vencidos ou próximos do vencimento
  * - atualiza status do documento
  * - atualiza status do usuário
- * - envia mensagens SYSTEM no chat (tempo real via WS)
+ * - envia mensagens SYSTEM no chat (tempo real via WS) quando o STATUS do motorista muda
  */
 async function documentExpirationJob() {
   console.log('⏱️ Iniciando job de verificação de documentos');
@@ -61,10 +61,33 @@ async function documentExpirationJob() {
       return 'VALID';
     };
 
-    // processa por motorista (evita spam por documento)
+    const expectedStatusFrom = ({ reputationScore, overallDocStatus }) => {
+      const rep = Number(reputationScore);
+      if (Number.isFinite(rep) && rep < 4) return 'BANNED';
+      if (overallDocStatus === 'EXPIRED') return 'BANNED';
+      if (overallDocStatus === 'EXPIRING') return 'IRREGULAR';
+      return 'ACTIVE';
+    };
+
+    const systemEventFromUserStatus = (userStatus) => {
+      if (userStatus === 'BANNED') return 'BAN';
+      if (userStatus === 'IRREGULAR') return 'DOC_EXPIRING';
+      return 'APPROVED';
+    };
+
+    const systemBodyFrom = (evt) => {
+      if (evt === 'BAN') {
+        return 'Conta bloqueada. Existem pendências (documentos ou reputação). Regularize para voltar a operar.';
+      }
+      if (evt === 'DOC_EXPIRING') {
+        return 'Aviso: sua conta está irregular. Verifique documentos e mantenha tudo em dia para evitar bloqueio.';
+      }
+      return 'Situação regularizada. Sua conta está liberada para operar.';
+    };
+
+    // processa por motorista (evita spam: só quando o status muda)
     for (const entry of byDriver.values()) {
-      const oldStatuses = entry.docs.map((d) => d.old_status);
-      const oldOverall = overallFromStatuses(oldStatuses);
+      const oldUserStatus = entry.oldUserStatus;
 
       const newStatuses = entry.docs.map((d) => calcDocStatus(d.expires_at));
       const newOverall = overallFromStatuses(newStatuses);
@@ -81,44 +104,44 @@ async function documentExpirationJob() {
         }
       }
 
-      // Atualiza usuário conforme overall
-      // Regra: banimento por reputação (ex: < 4.0) tem prioridade sobre documentos.
-      // Se já estiver BANIDO e a reputação for <4, o job NÃO pode “desbanir” por docs em dia.
-      const rep = Number(entry.reputationScore);
-      const bannedByReputation = entry.oldUserStatus === 'BANNED' && Number.isFinite(rep) && rep < 4;
+      // Atualiza usuário conforme:
+      // - reputação (<4) tem prioridade (banido)
+      // - senão, documentos (expired/expiring/valid)
+      const expectedUserStatus = expectedStatusFrom({
+        reputationScore: entry.reputationScore,
+        overallDocStatus: newOverall,
+      });
 
-      let newUserStatus = entry.oldUserStatus;
-      if (!bannedByReputation) {
-        if (newOverall === 'EXPIRED') newUserStatus = 'BANNED';
-        else if (newOverall === 'EXPIRING') newUserStatus = 'IRREGULAR';
-        else newUserStatus = 'ACTIVE';
+      if (expectedUserStatus !== oldUserStatus) {
+        await UsersRepository.updateStatus(entry.userId, expectedUserStatus);
       }
 
-      if (newUserStatus !== entry.oldUserStatus) {
-        await UsersRepository.updateStatus(entry.userId, newUserStatus);
+      // Mensagem SYSTEM:
+      // - quando muda o status do usuário
+      // - OU quando o status já é IRREGULAR/BANNED e ainda não existe uma mensagem SYSTEM desse tipo
+      const evt = systemEventFromUserStatus(expectedUserStatus);
+      let shouldSend = expectedUserStatus !== oldUserStatus;
+
+      if (!shouldSend && (expectedUserStatus === 'IRREGULAR' || expectedUserStatus === 'BANNED')) {
+        const exists = await client.query(
+          `
+          SELECT 1
+          FROM messages
+          WHERE driver_id = $1
+            AND sender_role = 'SYSTEM'
+            AND system_event = $2
+          LIMIT 1
+          `,
+          [entry.driverId, evt]
+        );
+        shouldSend = (exists.rows || []).length === 0;
       }
 
-      // Mensagem SYSTEM somente quando muda o overall
-      // Evita mensagens “liberada” quando o motorista segue banido por reputação.
-      if (!bannedByReputation && newOverall !== oldOverall) {
-        const evt =
-          newOverall === 'EXPIRED'
-            ? 'BAN'
-            : newOverall === 'EXPIRING'
-              ? 'DOC_EXPIRING'
-              : 'APPROVED';
-
-        const body =
-          evt === 'BAN'
-            ? 'Conta bloqueada: existe documento vencido. Regularize para voltar a operar.'
-            : evt === 'DOC_EXPIRING'
-              ? 'Aviso: existe documento próximo do vencimento. Atualize para evitar bloqueio.'
-              : 'Documentos regularizados. Sua conta foi liberada para operar.';
-
+      if (shouldSend) {
         await MessagesService.sendSystemMessageRealtime({
           driverId: entry.driverId,
           systemEvent: evt,
-          body,
+          body: systemBodyFrom(evt),
           receiverUserId: entry.userId,
         });
       }

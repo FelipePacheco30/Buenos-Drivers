@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiFilter } from "react-icons/fi";
 import "./styles.css";
 
 const MOCK_REQUESTS = [
@@ -54,21 +55,36 @@ function formatDate(dateLike) {
   return d.toLocaleDateString();
 }
 
-const FILTERS = [
-  { id: "recent", label: "Mais recentes" },
-  { id: "pending", label: "Pendentes" },
-  { id: "validated", label: "Validadas" },
-];
-
 export default function AdminRequests() {
   const navigate = useNavigate();
   const { requestId } = useParams();
 
+  const filterRef = useRef(null);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("recent");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [statusFilters, setStatusFilters] = useState({
+    pending: true,
+    validated: true,
+  });
 
   // validação local (não persiste)
   const [validatedByRequest, setValidatedByRequest] = useState({});
+
+  useEffect(() => {
+    if (!filterOpen) return;
+    function onDocClick(e) {
+      const el = filterRef.current;
+      if (!el) return;
+      if (el.contains(e.target)) return;
+      setFilterOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("touchstart", onDocClick);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("touchstart", onDocClick);
+    };
+  }, [filterOpen]);
 
   const requests = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -82,26 +98,20 @@ export default function AdminRequests() {
       });
     }
 
-    if (filter === "pending") {
-      list = list.filter((r) => {
-        const validated = validatedByRequest[r.id] || {};
-        return r.documents.some((d) => !validated[d.type]);
-      });
-    }
-
-    if (filter === "validated") {
-      list = list.filter((r) => {
-        const validated = validatedByRequest[r.id] || {};
-        return r.documents.every((d) => !!validated[d.type]);
-      });
-    }
+    // filtros por checkbox (whatsapp-like)
+    list = list.filter((r) => {
+      const validated = validatedByRequest[r.id] || {};
+      const done = r.documents.every((d) => !!validated[d.type]);
+      if (done) return !!statusFilters.validated;
+      return !!statusFilters.pending;
+    });
 
     const sorted = [...list].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
     return sorted;
-  }, [filter, query, validatedByRequest]);
+  }, [query, validatedByRequest, statusFilters]);
 
   const selected = useMemo(() => {
     if (!requestId) return null;
@@ -225,27 +235,55 @@ export default function AdminRequests() {
       </div>
 
       <div className="admin-requests-toolbar">
-        <input
-          className="admin-requests-search"
-          placeholder="Buscar por nome ou email…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="requests-topbar">
+          <input
+            className="admin-requests-search"
+            placeholder="Buscar por nome ou email…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
 
-        <div className="admin-requests-filters">
-          {FILTERS.map((f) => (
+          <div className="filter-wrap">
             <button
-              key={f.id}
-              className={`chip ${filter === f.id ? "active" : ""}`}
-              onClick={() => setFilter(f.id)}
+              className="filter-btn"
+              aria-label="Filtros"
+              onClick={() => setFilterOpen((v) => !v)}
             >
-              {f.label}
+              <FiFilter />
             </button>
-          ))}
+
+            {filterOpen && (
+              <div className="filter-dropdown" role="menu" ref={filterRef}>
+                <label className="filter-item">
+                  <input
+                    type="checkbox"
+                    checked={!!statusFilters.pending}
+                    onChange={(e) =>
+                      setStatusFilters((p) => ({ ...p, pending: e.target.checked }))
+                    }
+                  />
+                  Pendentes
+                </label>
+                <label className="filter-item">
+                  <input
+                    type="checkbox"
+                    checked={!!statusFilters.validated}
+                    onChange={(e) =>
+                      setStatusFilters((p) => ({
+                        ...p,
+                        validated: e.target.checked,
+                      }))
+                    }
+                  />
+                  Validadas
+                </label>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="admin-requests-grid">
+      <div className="admin-requests-list">
         {requests.map((r) => {
           const validated = validatedByRequest[r.id] || {};
           const done = r.documents.every((d) => !!validated[d.type]);
@@ -254,27 +292,27 @@ export default function AdminRequests() {
           return (
             <button
               key={r.id}
-              className="admin-request-card"
+              className="admin-request-row"
               onClick={() => navigate(`/admin/requests/${r.id}`)}
             >
-              <div className="admin-request-card-top">
-                <div className="admin-request-card-avatar">
-                  {r.user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </div>
-                <span className={`pill ${done ? "success" : "warning"}`}>
-                  {done ? "Completa" : `${pendingCount} pend.`}
-                </span>
+              <div className="admin-request-row-avatar">
+                {r.user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join("")}
               </div>
 
-              <div className="admin-request-card-name">{r.user.name}</div>
-              <div className="admin-request-card-email">{r.user.email}</div>
-              <div className="admin-request-card-footer">
-                <span className="pill pill-yellow">{r.user.city}</span>
-                <span className="pill pill-blue">{formatDate(r.created_at)}</span>
+              <div className="admin-request-row-main">
+                <div className="admin-request-row-top">
+                  <div className="admin-request-row-name">
+                    <strong>{r.user.name}</strong>
+                    <span className={`state-tag ${done ? "success" : "warning"}`}>
+                      {done ? "Validada" : `${pendingCount} pend.`}
+                    </span>
+                  </div>
+                </div>
+                <div className="admin-request-row-bottom">{r.user.email}</div>
               </div>
             </button>
           );

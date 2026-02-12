@@ -7,7 +7,7 @@ class VehiclesController {
   async create(req, res, next) {
     try {
       const vehicle = await VehiclesService.create({
-        userId: req.user.user_id,
+        userId: req.user.id,
         ...req.body,
       });
 
@@ -22,7 +22,7 @@ class VehiclesController {
    */
   async list(req, res, next) {
     try {
-      const vehicles = await VehiclesService.listByUser(req.user.user_id);
+      const vehicles = await VehiclesService.listByUser(req.user.id);
       return res.json(vehicles);
     } catch (err) {
       next(err);

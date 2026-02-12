@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import DriverService from "../../../services/driver.service";
 import { getToken } from "../../../services/api";
 import buenosAiresImage from "../../../assets/images/buenosAires.png";
+import { useNavigate } from "react-router-dom";
 import "./styles.css";
 
 function getDocumentStatusColor(status) {
@@ -13,9 +13,9 @@ function getDocumentStatusColor(status) {
 
 export default function DriverAccount() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
-  const [uploadingId, setUploadingId] = useState(null);
 
   // mock permitido para número de viagens e tempo de conta (reputação vem real)
   const totalTrips = user?.driver?.total_trips ?? 32;
@@ -68,42 +68,8 @@ export default function DriverAccount() {
       ? user.reputation_score.toFixed(1)
       : "-";
 
-  async function handleUpload(doc) {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "application/pdf";
-    input.onchange = async (event) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      try {
-        setUploadingId(doc.id);
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", doc.type);
-
-        // endpoint real de upload de documento
-        await DriverService.uploadDocument(formData);
-
-        // recarrega lista
-        const token = getToken();
-        const res = await fetch("http://localhost:3333/documents", {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setDocuments(data);
-        }
-      } catch (err) {
-        console.error("Erro ao enviar documento", err);
-      } finally {
-        setUploadingId(null);
-      }
-    };
-
-    input.click();
+  function goToSendDocs() {
+    navigate("/driver/renewals");
   }
 
   return (
@@ -160,9 +126,6 @@ export default function DriverAccount() {
               {documents.map((doc) => {
                 const statusClass = getDocumentStatusColor(doc.status);
 
-                const canUpload =
-                  doc.status === "EXPIRING" || doc.status === "EXPIRED";
-
                 const createdAt = doc.created_at
                   ? new Date(doc.created_at).toLocaleDateString()
                   : "-";
@@ -195,16 +158,6 @@ export default function DriverAccount() {
                         Vencimento: <strong>{expiresAt}</strong>
                       </span>
                     </div>
-
-                    <button
-                      className="document-upload-button"
-                      onClick={() => handleUpload(doc)}
-                      disabled={!canUpload || uploadingId === doc.id}
-                    >
-                      {uploadingId === doc.id
-                        ? "Enviando..."
-                        : "Enviar novo documento"}
-                    </button>
                   </div>
                 );
               })}
@@ -213,9 +166,14 @@ export default function DriverAccount() {
         </div>
       </div>
 
-      <button className="logout-button" onClick={logout}>
-        Sair da conta
-      </button>
+      <div className="account-actions">
+        <button className="logout-button" onClick={logout}>
+          Sair da conta
+        </button>
+        <button className="send-docs-button" onClick={goToSendDocs}>
+          Enviar documentos
+        </button>
+      </div>
     </div>
   );
 }

@@ -232,12 +232,15 @@ export default function AdminDrivers() {
               <button
                 className="admin-driver-message"
                 disabled={
+                  detail.user_status !== "IRREGULAR" &&
+                  detail.user_status !== "BANNED" &&
                   detail.documents_overall_status !== "EXPIRING" &&
                   detail.documents_overall_status !== "EXPIRED"
                 }
                 onClick={async () => {
                   const token = getToken();
                   const evt =
+                    detail.user_status === "BANNED" ||
                     detail.documents_overall_status === "EXPIRED"
                       ? "BAN"
                       : "DOC_EXPIRING";

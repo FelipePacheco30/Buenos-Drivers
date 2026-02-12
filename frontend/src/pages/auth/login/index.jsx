@@ -57,6 +57,9 @@ export default function Login() {
 
       // REDIRECIONAMENTO REAL
       if (data.user.role === "DRIVER") {
+        if (data.user.status === "BANNED") {
+          sessionStorage.setItem("banned_modal", "1");
+        }
         navigate("/driver", { replace: true });
       } else if (data.user.role === "ADMIN") {
         navigate("/admin", { replace: true });

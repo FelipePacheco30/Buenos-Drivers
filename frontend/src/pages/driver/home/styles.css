@@ -8,6 +8,115 @@
 .map-area {
   height: 100%;
   width: 100%;
+  position: relative;
+}
+
+/* ===== BLOQUEIO (BANIDO) ===== */
+.driver-home-blocked {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 28; /* acima do mapa, abaixo da sidebar */
+  background: rgba(2, 6, 23, 0.35);
+  pointer-events: all; /* bloqueia interações no mapa */
+}
+
+.driver-home-blocked-card {
+  width: min(520px, 100%);
+  background: #ffffff;
+  border: 1px solid rgba(2, 6, 23, 0.14);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.22);
+  border-radius: 18px;
+  padding: 16px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.driver-home-blocked-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.driver-home-blocked-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.driver-home-blocked-text strong {
+  display: block;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.driver-home-blocked-text span {
+  display: block;
+  margin-top: 6px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* ===== MODAL BANIDO (AO LOGAR) ===== */
+.driver-home-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  z-index: 60;
+}
+
+.driver-home-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100% - 24px));
+  background: #ffffff;
+  border: 1px solid rgba(2, 6, 23, 0.14);
+  box-shadow: 0 22px 60px rgba(2, 6, 23, 0.26);
+  border-radius: 18px;
+  padding: 18px 16px 14px;
+  z-index: 61;
+}
+
+.driver-home-modal h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f1724;
+}
+
+.driver-home-modal p {
+  margin: 10px 0 14px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.driver-home-modal button {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fcbf45;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.driver-home-modal button:hover {
+  background: #fbb02a;
 }
 
 /* ===== GANHOS ===== */

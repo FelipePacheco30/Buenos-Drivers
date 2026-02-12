@@ -122,3 +122,15 @@
   font-size: 22px;
   color: #75aadb;
 }
+
+/* estado desabilitado (ex: motorista banido) */
+.sidebar button:disabled,
+.sidebar button.nav-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sidebar button:disabled svg,
+.sidebar button.nav-disabled svg {
+  color: rgba(117, 170, 219, 0.55);
+}

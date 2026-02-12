@@ -19,6 +19,7 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const isDriver = user?.role === "DRIVER";
+  const isBannedDriver = isDriver && user?.status === "BANNED";
 
   function close() {
     setOpen(false);
@@ -130,7 +131,16 @@ export default function Sidebar() {
                 Caixa de entrada
               </button>
 
-              <button onClick={() => goTo("/driver/wallet")}>
+              <button
+                onClick={() => (!isBannedDriver ? goTo("/driver/wallet") : null)}
+                disabled={isBannedDriver}
+                className={isBannedDriver ? "nav-disabled" : ""}
+                title={
+                  isBannedDriver
+                    ? "Carteira desabilitada enquanto a conta estiver banida"
+                    : ""
+                }
+              >
                 <FiDollarSign />
                 Carteira
               </button>

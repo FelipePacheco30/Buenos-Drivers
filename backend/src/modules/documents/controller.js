@@ -3,7 +3,9 @@ import DocumentsService from './service.js';
 class DocumentsController {
   /**
    * Cadastro/atualização de documento (sem PDF/foto)
-   * Body: { type: 'CNH'|'CRLV'|'CRIMINAL_RECORD', issued_at: 'YYYY-MM-DD', expires_at: 'YYYY-MM-DD' }
+   * Body:
+   * - CNH/CRIMINAL_RECORD: { type, issued_at, expires_at }
+   * - CRLV: { type:'CRLV', vehicle_id, issued_at, expires_at }
    */
   async upload(req, res, next) {
     try {
@@ -14,6 +16,12 @@ class DocumentsController {
 
       return res.status(201).json(document);
     } catch (err) {
+      if (err.message === 'VEHICLE_REQUIRED') {
+        return res.status(400).json({ message: 'vehicle_id é obrigatório para CRLV' });
+      }
+      if (err.message === 'VEHICLE_NOT_FOUND') {
+        return res.status(404).json({ message: 'Veículo não encontrado' });
+      }
       next(err);
     }
   }

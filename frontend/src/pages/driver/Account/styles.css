@@ -237,22 +237,44 @@
   background: #fbb02a;
 }
 
+/* AÇÕES */
+.account-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 16px 0;
+}
+
 /* BOTÃO SAIR */
 .logout-button {
-  display: block;
-  margin: 24px auto 0;
   background: #fcbf45;
   border: none;
   color: #ffffff;
-  padding: 10px 22px;
+  padding: 10px 18px;
   border-radius: 999px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .logout-button:hover {
   background: #fbb02a;
+}
+
+.send-docs-button {
+  background: #ffffff;
+  border: 1px solid rgba(2, 6, 23, 0.12);
+  color: #0f1724;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.send-docs-button:hover {
+  border-color: rgba(117, 170, 219, 0.45);
+  box-shadow: 0 0 0 3px rgba(117, 170, 219, 0.14);
 }
 
 /* DESKTOP */
