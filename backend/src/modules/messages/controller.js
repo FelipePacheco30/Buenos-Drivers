@@ -1,4 +1,5 @@
 import MessagesService from './service.js';
+import DocumentsRepository from '../documents/repository.js';
 
 class MessagesController {
   async adminConversations(req, res, next) {
@@ -54,22 +55,24 @@ class MessagesController {
       const { system_event, body } = req.body || {};
 
       const evt = String(system_event || '').trim();
-      if (!evt || !['BAN', 'DOC_EXPIRING', 'APPROVED'].includes(evt)) {
+      if (
+        !evt ||
+        !['BAN', 'BAN_DOCS', 'DOC_EXPIRING', 'APPROVED', 'REPUTATION_SUSPEND', 'REPUTATION_WARNING'].includes(evt)
+      ) {
         return res.status(400).json({ message: 'system_event inválido' });
       }
 
       const text = String(body || '').trim();
-      const defaultBody =
-        evt === 'BAN'
-          ? 'Conta bloqueada: documento vencido. Atualize seus documentos para voltar a operar.'
-          : evt === 'DOC_EXPIRING'
-            ? 'Aviso: documento próximo do vencimento. Atualize para evitar bloqueio.'
-            : 'Documentos aprovados. Sua conta está liberada para operar.';
-
-      
-      
       const driver = await (await import('../drivers/repository.js')).default.getForAdminByDriverId(driverId);
       if (!driver) return res.status(404).json({ message: 'Motorista não encontrado' });
+
+      const documents = await DocumentsRepository.findByDriverId(driverId);
+      const defaultBody = MessagesService.buildSystemMessageBody({
+        systemEvent: evt,
+        driverName: driver.name,
+        documents,
+        now: new Date(),
+      });
 
       const msg = await MessagesService.sendSystemMessageRealtime({
         driverId,

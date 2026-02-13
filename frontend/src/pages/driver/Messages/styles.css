@@ -75,7 +75,18 @@
   border-color: rgba(239, 68, 68, 0.25);
 }
 
+.driver-bubble.system-ban_docs,
+.driver-bubble.system-reputation_suspend {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
 .driver-bubble.system-doc_expiring {
+  background: rgba(252, 191, 69, 0.16);
+  border-color: rgba(252, 191, 69, 0.28);
+}
+
+.driver-bubble.system-reputation_warning {
   background: rgba(252, 191, 69, 0.16);
   border-color: rgba(252, 191, 69, 0.28);
 }

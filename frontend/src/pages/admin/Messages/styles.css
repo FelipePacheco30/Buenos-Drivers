@@ -375,7 +375,18 @@
   border-color: rgba(239, 68, 68, 0.25);
 }
 
+.bubble.system-ban_docs,
+.bubble.system-reputation_suspend {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
 .bubble.system-doc_expiring {
+  background: rgba(252, 191, 69, 0.16);
+  border-color: rgba(252, 191, 69, 0.28);
+}
+
+.bubble.system-reputation_warning {
   background: rgba(252, 191, 69, 0.16);
   border-color: rgba(252, 191, 69, 0.28);
 }

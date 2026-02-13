@@ -70,7 +70,7 @@ export default function AdminMessages() {
   const [thread, setThread] = useState([]);
   const [draft, setDraft] = useState("");
 
-  const endRef = useRef(null);
+  const bodyRef = useRef(null);
 
   useEffect(() => {
     if (!filterOpen) return;
@@ -199,9 +199,13 @@ export default function AdminMessages() {
   }, [events, driverId]);
 
   useEffect(() => {
-    if (!endRef.current) return;
-    endRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [threadLoading, thread]);
+    if (!driverId) return;
+    const el = bodyRef.current;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTo({ top: el.scrollHeight, behavior: "auto" });
+    });
+  }, [driverId, threadLoading, thread]);
 
   const active = useMemo(() => {
     if (!driverId) return null;
@@ -395,7 +399,7 @@ export default function AdminMessages() {
               </button>
             </div>
 
-            <div className="thread-body">
+            <div className="thread-body" ref={bodyRef}>
               {threadLoading && <div className="state">Carregando conversa…</div>}
 
               {!threadLoading &&
@@ -435,7 +439,6 @@ export default function AdminMessages() {
                     </div>
                   );
                 })}
-              <div ref={endRef} />
             </div>
 
             <div className="thread-compose">

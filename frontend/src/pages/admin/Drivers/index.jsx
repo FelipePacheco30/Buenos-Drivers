@@ -265,18 +265,32 @@ export default function AdminDrivers() {
               <button
                 className="admin-driver-message"
                 disabled={
-                  detail.user_status !== "IRREGULAR" &&
-                  detail.user_status !== "BANNED" &&
-                  detail.documents_overall_status !== "EXPIRING" &&
-                  detail.documents_overall_status !== "EXPIRED"
+                  (() => {
+                    const rep = toNumber(detail.reputation_score);
+                    const docs = detail.documents_overall_status;
+                    const banned = detail.user_status === "BANNED" || docs === "EXPIRED";
+                    const irregular = detail.user_status === "IRREGULAR" || docs === "EXPIRING";
+                    const warnRep = rep >= 4.0 && rep < 4.5;
+                    const suspendRep = rep > 0 && rep < 4.0;
+                    return !(banned || irregular || warnRep || suspendRep);
+                  })()
                 }
                 onClick={async () => {
                   const token = getToken();
-                  const evt =
-                    detail.user_status === "BANNED" ||
-                    detail.documents_overall_status === "EXPIRED"
-                      ? "BAN"
-                      : "DOC_EXPIRING";
+                  const rep = toNumber(detail.reputation_score);
+                  const docs = detail.documents_overall_status;
+                  const hasExpiredDocs = docs === "EXPIRED";
+                  const hasExpiringDocs = docs === "EXPIRING";
+                  const isBanned = detail.user_status === "BANNED" || hasExpiredDocs;
+                  const isIrregular = detail.user_status === "IRREGULAR" || hasExpiringDocs;
+
+                  let evt = null;
+                  if (rep > 0 && rep < 4.0) evt = "REPUTATION_SUSPEND";
+                  else if (rep >= 4.0 && rep < 4.5) evt = "REPUTATION_WARNING";
+                  else if (isBanned && hasExpiredDocs) evt = "BAN_DOCS";
+                  else if (isBanned) evt = "BAN";
+                  else if (isIrregular) evt = "DOC_EXPIRING";
+                  else evt = "APPROVED";
 
                   const res = await fetch(
                     `http://localhost:3333/admin/messages/${driverId}/system`,

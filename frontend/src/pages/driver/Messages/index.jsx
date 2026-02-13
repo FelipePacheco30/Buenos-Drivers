@@ -31,7 +31,7 @@ export default function DriverMessages() {
   const [thread, setThread] = useState([]);
   const [draft, setDraft] = useState("");
 
-  const endRef = useRef(null);
+  const bodyRef = useRef(null);
 
   useEffect(() => {
     async function load() {
@@ -51,8 +51,11 @@ export default function DriverMessages() {
   }, []);
 
   useEffect(() => {
-    if (!endRef.current) return;
-    endRef.current.scrollIntoView({ behavior: "smooth" });
+    const el = bodyRef.current;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTo({ top: el.scrollHeight, behavior: "auto" });
+    });
   }, [loading, thread]);
 
   
@@ -162,7 +165,7 @@ export default function DriverMessages() {
         </div>
       </div>
 
-      <div className="driver-chat-body">
+      <div className="driver-chat-body" ref={bodyRef}>
         {loading && <div className="driver-chat-state">Carregando…</div>}
         {!loading &&
           threadWithSeparators.map((m) => {
@@ -201,7 +204,6 @@ export default function DriverMessages() {
               </div>
             );
           })}
-        <div ref={endRef} />
       </div>
 
       <div className="driver-chat-compose">

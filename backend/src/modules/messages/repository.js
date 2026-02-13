@@ -116,6 +116,22 @@ class MessagesRepository {
 
     return rows[0];
   }
+
+  async getLatestSystemByEvent(driverId, systemEvent) {
+    const { rows } = await query(
+      `
+      SELECT id, body, created_at
+      FROM messages
+      WHERE driver_id = $1
+        AND sender_role = 'SYSTEM'
+        AND system_event = $2
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [driverId, systemEvent]
+    );
+    return rows[0] || null;
+  }
 }
 
 export default new MessagesRepository();

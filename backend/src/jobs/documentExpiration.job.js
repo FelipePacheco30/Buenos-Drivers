@@ -1,6 +1,7 @@
 import { pool } from '../config/database.js';
 import UsersRepository from '../modules/users/repository.js';
 import MessagesService from '../modules/messages/service.js';
+import MessagesRepository from '../modules/messages/repository.js';
 
 
 
@@ -12,7 +13,13 @@ import MessagesService from '../modules/messages/service.js';
 async function documentExpirationJob() {
   console.log('⏱️ Iniciando job de verificação de documentos');
 
-  const client = await pool.connect();
+  let client;
+  try {
+    client = await pool.connect();
+  } catch (err) {
+    console.error('❌ Erro ao conectar no PostgreSQL (job de documentos)', err);
+    return;
+  }
 
   try {
     const result = await client.query(`
@@ -23,6 +30,7 @@ async function documentExpirationJob() {
         d.status AS old_status,
         d.expires_at,
         u.id AS user_id,
+        u.name AS user_name,
         u.status AS old_user_status,
         u.reputation_score
       FROM documents d
@@ -39,6 +47,7 @@ async function documentExpirationJob() {
         byDriver.set(row.driver_id, {
           driverId: row.driver_id,
           userId: row.user_id,
+          userName: row.user_name,
           oldUserStatus: row.old_user_status,
           reputationScore: row.reputation_score,
           docs: [],
@@ -61,7 +70,8 @@ async function documentExpirationJob() {
       return 'VALID';
     };
 
-    const expectedStatusFrom = ({ reputationScore, overallDocStatus }) => {
+    const expectedStatusFrom = ({ reputationScore, overallDocStatus, oldUserStatus, docsCount }) => {
+      if (!docsCount || docsCount <= 0) return oldUserStatus;
       const rep = Number(reputationScore);
       if (Number.isFinite(rep) && rep < 4) return 'BANNED';
       if (overallDocStatus === 'EXPIRED') return 'BANNED';
@@ -69,20 +79,15 @@ async function documentExpirationJob() {
       return 'ACTIVE';
     };
 
-    const systemEventFromUserStatus = (userStatus) => {
-      if (userStatus === 'BANNED') return 'BAN';
-      if (userStatus === 'IRREGULAR') return 'DOC_EXPIRING';
+    const systemEventFrom = ({ expectedUserStatus, reputationScore, overallDocStatus }) => {
+      const rep = Number(reputationScore);
+      if (expectedUserStatus === 'BANNED') {
+        if (Number.isFinite(rep) && rep < 4) return 'REPUTATION_SUSPEND';
+        if (overallDocStatus === 'EXPIRED') return 'BAN_DOCS';
+        return 'BAN';
+      }
+      if (expectedUserStatus === 'IRREGULAR') return 'DOC_EXPIRING';
       return 'APPROVED';
-    };
-
-    const systemBodyFrom = (evt) => {
-      if (evt === 'BAN') {
-        return 'Conta bloqueada. Existem pendências (documentos ou reputação). Regularize para voltar a operar.';
-      }
-      if (evt === 'DOC_EXPIRING') {
-        return 'Aviso: sua conta está irregular. Verifique documentos e mantenha tudo em dia para evitar bloqueio.';
-      }
-      return 'Situação regularizada. Sua conta está liberada para operar.';
     };
 
     
@@ -110,6 +115,8 @@ async function documentExpirationJob() {
       const expectedUserStatus = expectedStatusFrom({
         reputationScore: entry.reputationScore,
         overallDocStatus: newOverall,
+        oldUserStatus,
+        docsCount: entry.docs.length,
       });
 
       if (expectedUserStatus !== oldUserStatus) {
@@ -119,32 +126,121 @@ async function documentExpirationJob() {
       
       
       
-      const evt = systemEventFromUserStatus(expectedUserStatus);
+      const evt = systemEventFrom({
+        expectedUserStatus,
+        reputationScore: entry.reputationScore,
+        overallDocStatus: newOverall,
+      });
       let shouldSend = expectedUserStatus !== oldUserStatus;
 
       if (!shouldSend && (expectedUserStatus === 'IRREGULAR' || expectedUserStatus === 'BANNED')) {
-        const exists = await client.query(
-          `
-          SELECT 1
-          FROM messages
-          WHERE driver_id = $1
-            AND sender_role = 'SYSTEM'
-            AND system_event = $2
-          LIMIT 1
-          `,
-          [entry.driverId, evt]
-        );
-        shouldSend = (exists.rows || []).length === 0;
+        const last = await MessagesRepository.getLatestSystemByEvent(entry.driverId, evt);
+        if (!last) {
+          shouldSend = true;
+        } else {
+          const body = String(last.body || '');
+          const hasSignature =
+            body.toLowerCase().includes('equipe buenos drivers') ||
+            body.toLowerCase().includes('equipe buenos drivers.');
+          shouldSend = !hasSignature;
+        }
       }
 
       if (shouldSend) {
         await MessagesService.sendSystemMessageRealtime({
           driverId: entry.driverId,
           systemEvent: evt,
-          body: systemBodyFrom(evt),
+          body: MessagesService.buildSystemMessageBody({
+            systemEvent: evt,
+            driverName: entry.userName,
+            documents: entry.docs,
+            now: today,
+          }),
           receiverUserId: entry.userId,
         });
       }
+
+      const rep = Number(entry.reputationScore);
+      const shouldWarnReputation =
+        expectedUserStatus === 'ACTIVE' && Number.isFinite(rep) && rep >= 4.0 && rep < 4.5;
+      if (shouldWarnReputation) {
+        const warnEvt = 'REPUTATION_WARNING';
+        const lastWarn = await MessagesRepository.getLatestSystemByEvent(entry.driverId, warnEvt);
+        const warnBody = String(lastWarn?.body || '');
+        const warnHasSignature = warnBody.toLowerCase().includes('equipe buenos drivers');
+        if (!lastWarn || !warnHasSignature) {
+          await MessagesService.sendSystemMessageRealtime({
+            driverId: entry.driverId,
+            systemEvent: warnEvt,
+            body: MessagesService.buildSystemMessageBody({
+              systemEvent: warnEvt,
+              driverName: entry.userName,
+              documents: entry.docs,
+              now: today,
+            }),
+            receiverUserId: entry.userId,
+          });
+        }
+      }
+    }
+
+    const bannedOrIrregular = await client.query(
+      `
+      SELECT
+        dr.id AS driver_id,
+        u.id AS user_id,
+        u.name,
+        u.status AS user_status,
+        u.reputation_score
+      FROM drivers dr
+      JOIN users u ON u.id = dr.user_id
+      WHERE u.status IN ('BANNED', 'IRREGULAR')
+      ORDER BY dr.created_at DESC
+      `
+    );
+
+    for (const r of bannedOrIrregular.rows || []) {
+      const driverId = r.driver_id;
+      const userId = r.user_id;
+      const name = r.name;
+      const st = r.user_status;
+      const rep = Number(r.reputation_score);
+
+      const docsRes = await client.query(
+        `SELECT id, driver_id, type, expires_at FROM documents WHERE driver_id = $1 ORDER BY type ASC`,
+        [driverId]
+      );
+      const docs = docsRes.rows || [];
+      const statuses = docs.map((d) => calcDocStatus(d.expires_at));
+      const overallDocStatus = overallFromStatuses(statuses);
+
+      let evt = null;
+      if (st === 'BANNED') {
+        if (Number.isFinite(rep) && rep < 4) evt = 'REPUTATION_SUSPEND';
+        else if (overallDocStatus === 'EXPIRED') evt = 'BAN_DOCS';
+        else evt = 'BAN';
+      } else if (st === 'IRREGULAR') {
+        evt = 'DOC_EXPIRING';
+      } else {
+        continue;
+      }
+
+      const last = await MessagesRepository.getLatestSystemByEvent(driverId, evt);
+      const body = String(last?.body || '');
+      const hasSignature = body.toLowerCase().includes('equipe buenos drivers');
+      if (last && hasSignature) continue;
+
+      await MessagesService.sendSystemMessageRealtime({
+        driverId,
+        systemEvent: evt,
+        body: MessagesService.buildSystemMessageBody({
+          systemEvent: evt,
+          driverName: name,
+          documents: docs,
+          now: today,
+        }),
+        receiverUserId: userId,
+      });
     }
 
     console.log('✅ Job de documentos finalizado');
