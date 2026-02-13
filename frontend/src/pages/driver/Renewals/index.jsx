@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getToken } from "../../../services/api";
 import useWebSocket from "../../../hooks/useWebSocket";
+import { useNavigate } from "react-router-dom";
+import { FiArrowLeft } from "react-icons/fi";
 import "./styles.css";
 
 function onlyDigits(s) {
@@ -52,6 +54,7 @@ function fmtDocName(doc) {
 }
 
 export default function DriverRenewals() {
+  const navigate = useNavigate();
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
   const [loading, setLoading] = useState(true);
@@ -362,12 +365,25 @@ export default function DriverRenewals() {
   return (
     <div className="driver-renewals">
       <div className="driver-renewals-header">
-        <h1>Enviar documentos</h1>
-        <p>
-          Você só pode enviar atualização para documentos <strong>vencidos</strong> ou{" "}
-          <strong>próximos do vencimento</strong>. O pedido será analisado em{" "}
-          <strong>Renovações</strong> pelo admin.
-        </p>
+        <div className="renewals-topbar">
+          <button
+            className="renewals-back"
+            type="button"
+            aria-label="Voltar"
+            title="Voltar"
+            onClick={() => navigate("/driver/account")}
+          >
+            <FiArrowLeft />
+          </button>
+          <div className="renewals-head-text">
+            <h1>Enviar documentos</h1>
+            <p>
+              Você só pode enviar atualização para documentos <strong>vencidos</strong> ou{" "}
+              <strong>próximos do vencimento</strong>. O pedido será analisado em{" "}
+              <strong>Renovações</strong> pelo admin.
+            </p>
+          </div>
+        </div>
       </div>
 
       {loading && <div className="state">Carregando…</div>}
@@ -562,7 +578,6 @@ export default function DriverRenewals() {
                       placeholder="Ex: Chevrolet"
                     />
                   </label>
-                  <div />
                   <label>
                     CRLV - Emissão
                     <input

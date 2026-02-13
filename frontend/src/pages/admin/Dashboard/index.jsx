@@ -13,9 +13,6 @@ export default function AdminDashboard() {
         <div className="hero-sun" aria-hidden="true" />
 
         <h1 className="admin-dashboard-title">Painel do administrador</h1>
-        <div className="admin-dashboard-subtitle">
-          Visão geral rápida — acompanhe os números mais recentes do app
-        </div>
       </div>
 
       <div className="admin-dashboard-cards">

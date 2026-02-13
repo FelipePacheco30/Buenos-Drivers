@@ -47,7 +47,8 @@
   width: 100%;
   border: 1px solid rgba(2, 6, 23, 0.12);
   border-radius: 14px;
-  padding: 12px;
+  height: 44px;
+  padding: 0 12px;
   outline: none;
 }
 
@@ -62,8 +63,8 @@
 }
 
 .filter-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
   border: 1px solid rgba(2, 6, 23, 0.12);
   background: rgba(117, 170, 219, 0.08);
@@ -82,7 +83,7 @@
 .filter-dropdown {
   position: absolute;
   right: 0;
-  top: 48px;
+  top: 50px;
   z-index: 10;
   min-width: 240px;
   background: #ffffff;
@@ -448,7 +449,8 @@
   flex: 1;
   border: 1px solid rgba(2, 6, 23, 0.12);
   border-radius: 14px;
-  padding: 12px;
+  height: 44px;
+  padding: 0 12px;
   outline: none;
 }
 

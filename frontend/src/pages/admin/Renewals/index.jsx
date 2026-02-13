@@ -253,9 +253,6 @@ export default function AdminRenewals() {
     <div className="admin-renewals">
       <div className="admin-renewals-header">
         <h1>Renovações</h1>
-        <div className="admin-renewals-subtitle">
-          Solicitações de atualização de documentos e adição de veículos (dados reais)
-        </div>
         <div className="admin-renewals-retention">
           As solicitações ficam armazenadas por <strong>7 dias</strong>. Após esse período, serão excluídas automaticamente.
         </div>

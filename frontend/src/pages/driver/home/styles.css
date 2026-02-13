@@ -90,10 +90,13 @@
   z-index: 61;
 }
 
+.driver-home-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .driver-home-modal .modal-x {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   width: 34px;
   height: 34px;
   border-radius: 999px;
@@ -104,6 +107,8 @@
   line-height: 1;
   font-weight: 900;
   cursor: pointer;
+  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 .driver-home-modal .modal-x:hover {
@@ -247,6 +252,22 @@
   font-weight: 900;
   color: #0f1724;
   font-size: 15px;
+}
+
+.vehicle-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vehicle-sub {
+  color: #6b7280;
+  font-weight: 800;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .driver-home-status {

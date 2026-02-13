@@ -377,9 +377,6 @@ export default function AdminDrivers() {
     <div className="admin-drivers">
       <div className="admin-drivers-header">
         <h1>Motoristas</h1>
-        <div className="admin-drivers-subtitle">
-          Filtre por reputação e situação de documentos (dados reais)
-        </div>
       </div>
 
       <div className="admin-drivers-toolbar">

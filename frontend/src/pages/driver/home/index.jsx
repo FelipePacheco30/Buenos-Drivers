@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiAlertTriangle, FiPackage, FiUsers } from "react-icons/fi";
+import { MdDirectionsCar, MdTwoWheeler } from "react-icons/md";
 import DriverMap from "../../../components/common/DriverMap";
 import { useAuth } from "../../../context/AuthContext";
 import formatCurrency from "../../../utils/formatCurrency";
@@ -15,6 +16,29 @@ function randomNearby(position, radiusKm = 0.6) {
   const r = Math.random() * radiusKm;
   const theta = Math.random() * 2 * Math.PI;
   const dLat = (r * Math.cos(theta)) / 111; 
+  const dLng = (r * Math.sin(theta)) / (111 * Math.cos((lat * Math.PI) / 180));
+  return [lat + dLat, lng + dLng];
+}
+
+function haversineKm(a, b) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(b[0] - a[0]);
+  const dLon = toRad(b[1] - a[1]);
+  const lat1 = toRad(a[0]);
+  const lat2 = toRad(b[0]);
+  const s =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  const c = 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+  return R * c;
+}
+
+function randomInRing(position, minKm, maxKm) {
+  const [lat, lng] = position;
+  const r = minKm + Math.random() * (maxKm - minKm);
+  const theta = Math.random() * 2 * Math.PI;
+  const dLat = (r * Math.cos(theta)) / 111;
   const dLng = (r * Math.sin(theta)) / (111 * Math.cos((lat * Math.PI) / 180));
   return [lat + dLat, lng + dLng];
 }
@@ -191,7 +215,7 @@ export default function DriverHome() {
     if (allowed.length === 0) return;
 
     const type = allowed[Math.floor(Math.random() * allowed.length)];
-    const p = randomNearby(driverPos, 0.7);
+    const p = randomInRing(driverPos, 0.25, 0.9);
     setOffer({ type, price: 10, pickupRaw: p });
     setPhase("CALCULATING");
   }, [phase, searchSeconds, work, driverPos]);
@@ -219,7 +243,18 @@ export default function DriverHome() {
       setDriverPos(driverOnRoad);
 
       const pickup = await snapToRoad(offer.pickupRaw);
-      const dest = await snapToRoad(randomNearby(pickup, 1.2));
+      let dest = null;
+      for (let attempt = 0; attempt < 10; attempt++) {
+        const minKm = attempt < 6 ? 1.4 : 2.0;
+        const maxKm = attempt < 6 ? 2.6 : 3.4;
+        const raw = randomInRing(pickup, minKm, maxKm);
+        const snapped = await snapToRoad(raw);
+        if (haversineKm(pickup, snapped) >= 0.9) {
+          dest = snapped;
+          break;
+        }
+        dest = snapped;
+      }
 
       const routeA = await routeByRoad(driverOnRoad, pickup);
       const routeB = await routeByRoad(pickup, dest);
@@ -451,27 +486,42 @@ export default function DriverHome() {
             onClick={() => setShowVehicleModal(false)}
           />
           <div className="driver-home-modal" role="dialog" aria-modal="true">
-            <h2>Escolha o veículo</h2>
+            <div className="driver-home-modal-head">
+              <h2>Escolha o veículo</h2>
+              <button
+                className="modal-x"
+                type="button"
+                aria-label="Fechar"
+                onClick={() => setShowVehicleModal(false)}
+              >
+                ×
+              </button>
+            </div>
             <p>Você tem mais de um veículo. Selecione qual vai usar nesta corrida.</p>
 
-            <div className="vehicle-pick-list">
-              {vehicles.map((v) => (
-                <label key={v.id} className={`vehicle-pick ${selectedVehicleId === v.id ? "active" : ""}`}>
-                  <input
-                    type="radio"
-                    name="vehicle"
-                    value={v.id}
-                    checked={selectedVehicleId === v.id}
-                    onChange={() => setSelectedVehicleId(v.id)}
-                  />
-                  <div className="vehicle-pick-main">
-                    <strong>
-                      {v.model} • {v.color} • {v.year}
-                    </strong>
-                    <span>{v.plate}</span>
-                  </div>
-                </label>
-              ))}
+            <div className="work-pick">
+              {vehicles.map((v) => {
+                const on = selectedVehicleId === v.id;
+                const isMoto = String(v.kind || "").toUpperCase() === "MOTO";
+                const Icon = isMoto ? MdTwoWheeler : MdDirectionsCar;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    className="work-row"
+                    onClick={() => setSelectedVehicleId(v.id)}
+                  >
+                    <span className={`work-dot ${on ? "on" : ""}`} />
+                    <Icon className="work-icon" />
+                    <span className="vehicle-label">
+                      <span className="work-label">
+                        {v.brand} {v.model} • {v.color} • {v.year}
+                      </span>
+                      <span className="vehicle-sub">{v.plate}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             <button className="primary-action" onClick={confirmVehicle} disabled={!selectedVehicleId}>
@@ -485,15 +535,17 @@ export default function DriverHome() {
         <>
           <div className="driver-home-modal-overlay" onClick={() => setShowModeModal(false)} />
           <div className="driver-home-modal" role="dialog" aria-modal="true">
-            <button
-              className="modal-x"
-              type="button"
-              aria-label="Fechar"
-              onClick={() => setShowModeModal(false)}
-            >
-              ×
-            </button>
-            <h2>Tipo de trabalho</h2>
+            <div className="driver-home-modal-head">
+              <h2>Tipo de trabalho</h2>
+              <button
+                className="modal-x"
+                type="button"
+                aria-label="Fechar"
+                onClick={() => setShowModeModal(false)}
+              >
+                ×
+              </button>
+            </div>
             <p>Escolha o que você quer fazer agora.</p>
 
             <div className="work-pick">

@@ -304,9 +304,6 @@ export default function AdminRequests() {
     <div className="admin-requests">
       <div className="admin-requests-header">
         <h1>Solicitações</h1>
-        <div className="admin-requests-subtitle">
-          Valide documentos para aceitar novos motoristas (mock nesta etapa)
-        </div>
       </div>
 
       <div className="admin-requests-toolbar">
