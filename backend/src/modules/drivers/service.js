@@ -12,7 +12,7 @@ class DriversService {
   }
 
   async getDashboard(userId) {
-    // lógica futura ou existente
+    
     return {
       message: 'Dashboard em construção',
       userId,

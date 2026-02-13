@@ -20,11 +20,11 @@ pool.on('error', (err) => {
   process.exit(1);
 });
 
-/**
- * Query helper
- * @param {string} text
- * @param {Array} params
- */
+
+
+
+
+
 export async function query(text, params = []) {
   const result = await pool.query(text, params);
   return result;

@@ -1,14 +1,14 @@
 import RenewalsService from './service.js';
 
 class RenewalsController {
-  /**
-   * Driver: cria solicitação de renovação (docs e/ou adicionar veículo)
-   * Body:
-   * {
-   *   documents: [{ type, vehicle_id?, issued_at, expires_at }],
-   *   vehicle_add?: { plate, brand, kind, model, year, color, crlv_issued_at, crlv_expires_at }
-   * }
-   */
+  
+
+
+
+
+
+
+
   async driverCreate(req, res, next) {
     try {
       const { documents, vehicle_add } = req.body || {};
@@ -62,9 +62,9 @@ class RenewalsController {
     }
   }
 
-  /**
-   * Admin: lista solicitações de renovação
-   */
+  
+
+
   async adminList(req, res, next) {
     try {
       const data = await RenewalsService.listForAdmin();
@@ -74,9 +74,9 @@ class RenewalsController {
     }
   }
 
-  /**
-   * Admin: detalhe
-   */
+  
+
+
   async adminDetail(req, res, next) {
     try {
       const { renewalId } = req.params;
@@ -88,9 +88,9 @@ class RenewalsController {
     }
   }
 
-  /**
-   * Admin: aprova renovação (aplica updates)
-   */
+  
+
+
   async adminApprove(req, res, next) {
     try {
       const { renewalId } = req.params;

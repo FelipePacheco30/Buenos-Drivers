@@ -19,7 +19,7 @@ class DocumentsService {
       throw new Error('DRIVER_NOT_FOUND');
     }
 
-    // CRLV agora é por veículo
+    
     let vehicleId = null;
     if (type === 'CRLV') {
       vehicleId = String(vehicle_id || '').trim();

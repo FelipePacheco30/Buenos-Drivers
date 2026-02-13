@@ -8,7 +8,7 @@ class AuthService {
       throw new Error('INVALID_CREDENTIALS');
     }
 
-    // login simples (DEV)
+    
     if (user.password_hash !== password) {
       throw new Error('INVALID_CREDENTIALS');
     }

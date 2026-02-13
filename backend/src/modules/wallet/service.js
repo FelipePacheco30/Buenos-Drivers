@@ -47,7 +47,7 @@ class WalletService {
       amount: net,
     });
 
-    // atualiza também o contador diário (mantemos simples)
+    
     const daily = await DriversRepository.incrementDailyEarnings(driverId, net);
 
     if (driverUserId) {
@@ -58,7 +58,7 @@ class WalletService {
         daily_earnings: daily,
         trip_id: tripId,
       });
-      // evento genérico para componentes que preferirem refetch completo
+      
       sendToUser(driverUserId, { type: 'PROFILE_UPDATED', scope: 'WALLET' });
     }
 

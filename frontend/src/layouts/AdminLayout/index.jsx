@@ -25,7 +25,7 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-layout">
-      {/* Sidebar (mesmo padrão do motorista, com seções de admin) */}
+      {}
       <Sidebar />
       <main className="admin-layout-content">
         <Outlet />

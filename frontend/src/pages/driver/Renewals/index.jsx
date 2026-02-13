@@ -8,11 +8,11 @@ function onlyDigits(s) {
 }
 
 function sanitizeISODateInput(value) {
-  // valor esperado: YYYY-MM-DD
+  
   const v = String(value || "");
   if (!v) return "";
   const cut = v.slice(0, 10);
-  // permite somente se estiver no formato completo (evita ano > 4 dígitos)
+  
   if (!/^\d{4}-\d{2}-\d{2}$/.test(cut)) return "";
   return cut;
 }
@@ -37,7 +37,7 @@ function normalizePlate(input) {
 }
 
 function isValidPlate(plate) {
-  // padrão: AB123CD (7 chars, letras e números)
+  
   return /^[A-Z]{2}\d{3}[A-Z]{2}$/.test(String(plate || ""));
 }
 
@@ -62,7 +62,7 @@ export default function DriverRenewals() {
   const [ok, setOk] = useState("");
   const [submittedOnce, setSubmittedOnce] = useState(false);
 
-  // inputs por documento (key: doc.id)
+  
   const [form, setForm] = useState({});
   const [touchedDocs, setTouchedDocs] = useState({});
 
@@ -106,7 +106,7 @@ export default function DriverRenewals() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function DriverRenewals() {
     }
     processedEventsRef.current = events.length;
     if (shouldReload) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [events]);
 
   const docsToRenew = useMemo(() => {
@@ -202,7 +202,7 @@ export default function DriverRenewals() {
     if (field === "color") return !color;
     if (field === "plate") {
       if (!plate) return true;
-      // só acusa inválida quando tiver 7 chars ou no submit
+      
       if (plate.length < 7 && !submittedOnce) return false;
       return !isValidPlate(plate);
     }

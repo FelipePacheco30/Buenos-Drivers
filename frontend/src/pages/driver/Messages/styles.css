@@ -7,7 +7,7 @@
 }
 
 .driver-thread-header {
-  padding: 74px 16px 12px; /* respeita hambúrguer/sidebar */
+  padding: 74px 16px 12px; 
   background: #75aadb;
   color: #ffffff;
   display: flex;
@@ -65,7 +65,7 @@
 }
 
 .driver-bubble.system {
-  /* base */
+  
   background: rgba(252, 191, 69, 0.12);
   border-color: rgba(252, 191, 69, 0.22);
 }

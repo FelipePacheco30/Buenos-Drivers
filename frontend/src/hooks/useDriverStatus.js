@@ -1,4 +1,4 @@
-// hooks/useDriverStatus.js
+
 import { useState, useEffect } from "react";
 import { getDriverEarnings } from "../services/api";
 

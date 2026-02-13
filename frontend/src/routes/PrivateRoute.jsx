@@ -9,7 +9,7 @@ export default function PrivateRoute({ children }) {
     return <div>Carregando...</div>;
   }
 
-  // Sem usuário OU sem token = sessão inválida (evita 403 em chamadas protegidas)
+  
   if (!user || !token) {
     return <Navigate to="/login" replace />;
   }

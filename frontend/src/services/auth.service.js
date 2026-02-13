@@ -4,7 +4,7 @@ const AuthService = {
   login: async (email, password, role) => {
     try {
       const response = await api.post('/auth/login', { email, password, role });
-      return response.data; // esperado: { token, user }
+      return response.data; 
     } catch (error) {
       throw error.response?.data || { message: 'Erro ao fazer login' };
     }

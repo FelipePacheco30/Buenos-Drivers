@@ -14,7 +14,7 @@ export function initWebSocket(server) {
   wss.on('connection', async (ws, request) => {
     try {
       const params = new URLSearchParams(request.url.split('?')[1]);
-      // compat: aceita user_id (preferido) ou token (token = userId no nosso backend DEV)
+      
       const userId = params.get('user_id') || params.get('token');
 
       if (!userId) {
@@ -34,9 +34,9 @@ export function initWebSocket(server) {
         try {
           const parsed = JSON.parse(String(raw || ''));
 
-          // envio de chat via WS (opcional; também existe REST)
-          // ADMIN: { type:'CHAT_SEND', driver_id:'uuid', body:'...' }
-          // DRIVER: { type:'CHAT_SEND', body:'...' } -> driverId inferido pelo userId
+          
+          
+          
           if (parsed?.type === 'CHAT_SEND') {
             const body = String(parsed.body || '').trim();
             if (!body) return;
@@ -60,7 +60,7 @@ export function initWebSocket(server) {
             }
           }
         } catch {
-          // ignora payload inválido
+          
         }
       });
 

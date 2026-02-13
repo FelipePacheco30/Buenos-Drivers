@@ -18,7 +18,7 @@ export default function AdminRenewals() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detail, setDetail] = useState(null);
 
-  // validação local (não persiste) igual Solicitações
+  
   const [validatedByRenewal, setValidatedByRenewal] = useState({});
 
   const loadList = useCallback(async () => {

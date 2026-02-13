@@ -10,7 +10,6 @@ import DriverHome from "../pages/driver/Home";
 import DriverAccount from "../pages/driver/Account";
 import DriverMessages from "../pages/driver/Messages";
 import DriverWallet from "../pages/driver/Wallet";
-import DriverTest from "../pages/driver/Test";
 import DriverRenewals from "../pages/driver/Renewals";
 import AdminDashboard from "../pages/admin/Dashboard";
 import AdminDrivers from "../pages/admin/Drivers";
@@ -22,15 +21,12 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* RAIZ */}
         <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* ROTAS PÚBLICAS */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
         </Route>
 
-        {/* ROTAS PROTEGIDAS DRIVER */}
         <Route
           path="/driver"
           element={
@@ -40,14 +36,12 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<DriverHome />} />
-          <Route path="test" element={<DriverTest />} />
           <Route path="account" element={<DriverAccount />} />
           <Route path="messages" element={<DriverMessages />} />
           <Route path="wallet" element={<DriverWallet />} />
           <Route path="renewals" element={<DriverRenewals />} />
         </Route>
 
-        {/* ROTAS PROTEGIDAS ADMIN */}
         <Route
           path="/admin"
           element={

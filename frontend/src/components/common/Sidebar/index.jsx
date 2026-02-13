@@ -26,11 +26,11 @@ export default function Sidebar() {
   const isDriver = user?.role === "DRIVER";
   const isBannedDriver = isDriver && user?.status === "BANNED";
 
-  // Notificações (incrementais via WS; zera ao entrar na tela)
+  
   const [driverInboxNotifs, setDriverInboxNotifs] = useState(0);
   const [adminInboxNotifs, setAdminInboxNotifs] = useState(0);
   const [adminRenewalsNotifs, setAdminRenewalsNotifs] = useState(0);
-  const [adminRequestsNotifs, setAdminRequestsNotifs] = useState(3); // MOCK atual de Solicitações
+  const [adminRequestsNotifs, setAdminRequestsNotifs] = useState(3); 
 
   function close() {
     setOpen(false);
@@ -45,7 +45,7 @@ export default function Sidebar() {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("role");
     sessionStorage.removeItem("user");
-    // compat
+    
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     logout();
@@ -72,7 +72,7 @@ export default function Sidebar() {
   const inAdminRequests = location.pathname.startsWith("/admin/requests");
 
   useEffect(() => {
-    // limpa quando o usuário está na tela correspondente
+    
     if (isAdmin) {
       if (inAdminMessages && adminInboxNotifs !== 0) setAdminInboxNotifs(0);
       if (inAdminRenewals && adminRenewalsNotifs !== 0) setAdminRenewalsNotifs(0);
@@ -81,7 +81,7 @@ export default function Sidebar() {
     if (isDriver) {
       if (inDriverMessages && driverInboxNotifs !== 0) setDriverInboxNotifs(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [location.pathname, isAdmin, isDriver]);
 
   useEffect(() => {
@@ -98,12 +98,12 @@ export default function Sidebar() {
       if (ev.type === "CHAT_MESSAGE") {
         const senderRole = ev?.message?.sender_role;
 
-        // Motorista: notifica mensagens do ADMIN/SYSTEM quando não está no chat
+        
         if (isDriver && !inDriverMessages && (senderRole === "ADMIN" || senderRole === "SYSTEM")) {
           incDriverInbox += 1;
         }
 
-        // Admin: notifica mensagens do DRIVER quando não está no inbox/chat
+        
         if (isAdmin && !inAdminMessages && senderRole === "DRIVER") {
           incAdminInbox += 1;
         }
@@ -129,7 +129,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ☰ HAMBÚRGUER (some quando o menu está aberto) */}
+      {}
       {!open && (
         <div className="sidebar-hamburger" onClick={() => setOpen(true)}>
           <FiMenu size={26} />
@@ -137,12 +137,12 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* OVERLAY PARA FECHAR AO CLICAR FORA */}
+      {}
       {open && <div className="sidebar-overlay" onClick={close} />}
 
-      {/* SIDEBAR */}
+      {}
       <aside className={`sidebar ${open ? "open" : ""}`}>
-        {/* HEADER DE PERFIL */}
+        {}
         <div
           className="sidebar-profile"
           onClick={() => (isAdmin ? goTo("/admin") : goTo("/driver/account"))}
@@ -164,7 +164,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* NAVEGAÇÃO */}
+        {}
         <nav>
           {isAdmin ? (
             <>

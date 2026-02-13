@@ -13,13 +13,13 @@ import driverIconImg from "../../../assets/icons/driver.png";
 import userIconImg from "../../../assets/icons/arg.mark.png";
 import destinyIconImg from "../../../assets/icons/arg.destiny.png";
 
-/* 🇦🇷 Limites da Argentina */
+
 const ARGENTINA_BOUNDS = [
   [-55.0, -73.5],
   [-21.5, -53.5],
 ];
 
-/* 📍 Buenos Aires */
+
 const DEFAULT_DRIVER_POSITION = [-34.6083, -58.3712];
 
 function imageDivIcon({ src, w, h, anchorX, anchorY, className = "" }) {
@@ -38,7 +38,7 @@ function imageDivIcon({ src, w, h, anchorX, anchorY, className = "" }) {
   });
 }
 
-/* 🚗 Ícone do motorista (rotacionável) */
+
 function driverDivIcon(angleDeg = 0) {
   const w = 44;
   const h = 44;
@@ -61,7 +61,7 @@ function driverDivIcon(angleDeg = 0) {
   });
 }
 
-/* 📌 Ícone pickup (usuário) */
+
 function pickupIcon() {
   const w = 32;
   const h = 32;
@@ -75,7 +75,7 @@ function pickupIcon() {
   });
 }
 
-/* 📍 Ícone destino */
+
 function destinyIcon() {
   const w = 34;
   const h = 34;
@@ -126,22 +126,22 @@ export default function DriverMap({
           width: "100%",
         }}
       >
-        {/* 🗺️ Mapa clean estilo Uber */}
+        {}
         <TileLayer
           attribution="&copy; CartoDB"
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
 
-        {/* 🚗 Motorista */}
+        {}
         <Marker position={driverPos} icon={driverDivIcon(heading)} />
 
-        {/* 📍 Pickup */}
+        {}
         {pickupPos && <Marker position={pickupPos} icon={pickupIcon()} />}
 
-        {/* 📍 Destino */}
+        {}
         {destPos && <Marker position={destPos} icon={destinyIcon()} />}
 
-        {/* rota (se houver) */}
+        {}
         {route && route.length > 1 && (
           <Polyline
             positions={route}
@@ -149,7 +149,7 @@ export default function DriverMap({
           />
         )}
 
-        {/* 🔍 Zoom longe da sidebar */}
+        {}
         <ZoomControl position="bottomright" />
       </MapContainer>
     </div>

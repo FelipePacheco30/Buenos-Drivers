@@ -26,7 +26,7 @@ class RenewalsRepository {
   }
 
   async addVehicleAdd({ renewalId, plate, brand, kind, model, year, color, crlvIssuedAt, crlvExpiresAt }) {
-    // compat: se o banco ainda não tiver coluna "kind", faz fallback sem ela
+    
     try {
       const { rows } = await query(
         `
@@ -40,7 +40,7 @@ class RenewalsRepository {
       return rows[0];
     } catch (e) {
       const code = e?.code;
-      // 42703: undefined_column
+      
       if (code !== '42703') throw e;
       const { rows } = await query(
         `

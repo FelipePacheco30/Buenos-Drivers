@@ -1,9 +1,9 @@
 import VehiclesService from './service.js';
 
 class VehiclesController {
-  /**
-   * Cadastra um novo veículo para o motorista logado
-   */
+  
+
+
   async create(req, res, next) {
     try {
       const vehicle = await VehiclesService.create({
@@ -17,9 +17,9 @@ class VehiclesController {
     }
   }
 
-  /**
-   * Lista os veículos do motorista logado
-   */
+  
+
+
   async list(req, res, next) {
     try {
       const vehicles = await VehiclesService.listByUser(req.user.id);

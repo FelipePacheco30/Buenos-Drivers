@@ -1,4 +1,4 @@
-// context/DriverContext.jsx
+
 import React, { createContext, useContext } from "react";
 import useDriverStatus from "../hooks/useDriverStatus";
 
@@ -14,5 +14,5 @@ export const DriverProvider = ({ children }) => {
   );
 };
 
-// Hook para acessar dados do motorista
+
 export const useDriverContext = () => useContext(DriverContext);

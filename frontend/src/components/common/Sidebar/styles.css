@@ -1,4 +1,4 @@
-/* ☰ hamburguer */
+
 .sidebar-hamburger {
   position: fixed;
   top: 18px;
@@ -34,7 +34,7 @@
   border: 2px solid #ffffff;
 }
 
-/* overlay para fechar clicando fora */
+
 .sidebar-overlay {
   position: fixed;
   inset: 0;
@@ -42,7 +42,7 @@
   z-index: 34;
 }
 
-/* sidebar */
+
 .sidebar {
   position: fixed;
   top: 0;
@@ -60,12 +60,12 @@
   flex-direction: column;
 }
 
-/* aberta */
+
 .sidebar.open {
   transform: translateX(0);
 }
 
-/* header de perfil */
+
 .sidebar-profile {
   display: flex;
   align-items: center;
@@ -114,7 +114,7 @@
   font-weight: 600;
 }
 
-/* navegação */
+
 .sidebar nav {
   display: flex;
   flex-direction: column;
@@ -122,7 +122,7 @@
   padding: 28px 24px 0;
 }
 
-/* itens */
+
 .sidebar button {
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@
   color: #75aadb;
 }
 
-/* estado desabilitado (ex: motorista banido) */
+
 .sidebar button:disabled,
 .sidebar button.nav-disabled {
   opacity: 0.45;

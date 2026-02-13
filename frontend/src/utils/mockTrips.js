@@ -1,10 +1,10 @@
-// utils/mockTrips.js
 
-/**
- * Gera uma lista de corridas falsas para testes
- * @param {number} count Número de corridas
- * @returns {Array} Array de objetos de corridas
- */
+
+
+
+
+
+
 export default function mockTrips(count = 10) {
   const statuses = ["COMPLETED", "CANCELED", "PENDING"];
   const trips = [];

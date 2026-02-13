@@ -45,15 +45,15 @@ export default function Login() {
         throw new Error(data.message || "Credenciais inválidas");
       }
 
-      // salva token e atualiza contexto de autenticação
+      
       setApiToken(data.token);
       setAuthUser(data.user);
 
-      // também salva role separadamente (útil)
+      
       sessionStorage.setItem("role", data.user.role);
       localStorage.removeItem("role");
 
-      // REDIRECIONAMENTO REAL
+      
       if (data.user.role === "DRIVER") {
         if (data.user.status === "BANNED") {
           sessionStorage.setItem("banned_modal", "1");

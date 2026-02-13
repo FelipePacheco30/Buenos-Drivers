@@ -1,6 +1,6 @@
-/**
- * Calcula média de avaliações
- */
+
+
+
 export function calculateAverageRating(ratings = []) {
   if (!ratings.length) return 0;
 
@@ -8,9 +8,9 @@ export function calculateAverageRating(ratings = []) {
   return Number((total / ratings.length).toFixed(2));
 }
 
-/**
- * Atualiza reputação com nova avaliação
- */
+
+
+
 export function updateReputation(currentRating, totalRatings, newRating) {
   const totalScore = currentRating * totalRatings + newRating;
   const newTotalRatings = totalRatings + 1;
@@ -21,9 +21,9 @@ export function updateReputation(currentRating, totalRatings, newRating) {
   };
 }
 
-/**
- * Classificação textual da reputação
- */
+
+
+
 export function reputationLevel(rating) {
   if (rating >= 4.8) return "EXCELENTE";
   if (rating >= 4.5) return "ÓTIMO";

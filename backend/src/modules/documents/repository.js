@@ -2,7 +2,7 @@ import { query } from '../../config/database.js';
 
 class DocumentsRepository {
   async upsert({ driverId, vehicleId, type, issuedAt, expiresAt, status }) {
-    // CRLV: 1 por veículo
+    
     if (type === 'CRLV') {
       const { rows } = await query(
         `
@@ -22,7 +22,7 @@ class DocumentsRepository {
       return rows[0];
     }
 
-    // CNH / CRIMINAL_RECORD: 1 por motorista
+    
     if (type === 'CNH') {
       const { rows } = await query(
         `
@@ -42,7 +42,7 @@ class DocumentsRepository {
       return rows[0];
     }
 
-    // CRIMINAL_RECORD
+    
     const { rows } = await query(
       `
       INSERT INTO documents (driver_id, vehicle_id, type, issued_at, expires_at, status)

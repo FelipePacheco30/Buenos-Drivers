@@ -4,9 +4,9 @@ import DocumentsRepository from '../documents/repository.js';
 import VehiclesRepository from '../vehicles/repository.js';
 
 class DriversController {
-  /**
-   * Retorna os dados do motorista logado
-   */
+  
+
+
   async me(req, res, next) {
     try {
       const driver = await DriversService.getByUserId(req.user.id);
@@ -16,9 +16,9 @@ class DriversController {
     }
   }
 
-  /**
-   * Dashboard do motorista (opcional / futura rota)
-   */
+  
+
+
   async dashboard(req, res, next) {
     try {
       const data = await DriversService.getDashboard(req.user.id);
@@ -28,9 +28,9 @@ class DriversController {
     }
   }
 
-  /**
-   * Admin: lista motoristas com dados reais (reputação + documentos)
-   */
+  
+
+
   async adminList(req, res, next) {
     try {
       const drivers = await DriversRepository.listForAdmin();
@@ -40,9 +40,9 @@ class DriversController {
     }
   }
 
-  /**
-   * Admin: detalhe de um motorista (inclui documentos)
-   */
+  
+
+
   async adminDetail(req, res, next) {
     try {
       const { driverId } = req.params;

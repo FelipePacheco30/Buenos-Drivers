@@ -17,7 +17,7 @@ class ReviewsService {
     const deleted = await ReviewsRepository.deleteNegativeById(id);
     if (!deleted) return null;
 
-    // notifica motorista em tempo real
+    
     const driver = await DriversRepository.getForAdminByDriverId(deleted.driver_id);
     if (driver?.user_id) {
       sendToUser(driver.user_id, { type: 'REVIEWS_UPDATED' });

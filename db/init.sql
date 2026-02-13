@@ -1,11 +1,11 @@
--- ================================
--- EXTENSIONS
--- ================================
+
+
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- ================================
--- USERS ENUMS
--- ================================
+
+
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
@@ -20,9 +20,9 @@ BEGIN
     END IF;
 END$$;
 
--- ================================
--- TABLE: users
--- ================================
+
+
+
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -36,13 +36,13 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- INDEXES
+
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
--- ================================
--- SEED USERS
--- ================================
+
+
+
 INSERT INTO users (id, name, email, password, role, status, city, reputation_score) VALUES
 ('11111111-1111-1111-1111-111111111111','Admin Buenos','admin@buenos.com','admin123','ADMIN','ACTIVE','Buenos Aires',5.0),
 ('22222222-2222-2222-2222-222222222222','Rafael Motorista','rafael@buenos.com','driver123','DRIVER','ACTIVE','Buenos Aires',4.3),
@@ -58,9 +58,9 @@ INSERT INTO users (id, name, email, password, role, status, city, reputation_sco
 ('55555555-5555-5555-5555-555555555555','Usuario Cliente','cliente@buenos.com','user123','USER','ACTIVE','Buenos Aires',5.0)
 ON CONFLICT (id) DO NOTHING;
 
--- ================================
--- TABLE: drivers
--- ================================
+
+
+
 CREATE TABLE IF NOT EXISTS drivers (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL UNIQUE,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS drivers (
 CREATE INDEX IF NOT EXISTS idx_drivers_user_id ON drivers(user_id);
 CREATE INDEX IF NOT EXISTS idx_drivers_active ON drivers(is_active);
 
--- SEED DRIVERS (1:1 com usuários DRIVER)
+
 INSERT INTO drivers (id, user_id, total_trips, total_deliveries, daily_earnings, is_active)
 VALUES
 ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','22222222-2222-2222-2222-222222222222',5,2,50.00,TRUE),
@@ -95,15 +95,15 @@ VALUES
 ('40404040-4040-4040-4040-404040404040','14141414-1414-1414-1414-141414141414',11,6,16.00,TRUE)
 ON CONFLICT (id) DO NOTHING;
 
--- ================================
--- DOCUMENTS
--- - sem PDF/foto (somente datas + status)
--- ================================
 
--- ================================
--- VEHICLES
--- - cada motorista: min 1, max 2
--- ================================
+
+
+
+
+
+
+
+
 
 CREATE TABLE IF NOT EXISTS vehicles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
 
 CREATE INDEX IF NOT EXISTS idx_vehicles_user_id ON vehicles(user_id);
 
--- SEED VEHICLES (cada motorista tem ao menos 1; alguns terão 2)
+
 INSERT INTO vehicles (id, user_id, plate, brand, model, year, color)
 VALUES
 ('a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1','22222222-2222-2222-2222-222222222222','RA482JL','Toyota','Corolla',2019,'Prata'),
@@ -139,12 +139,12 @@ VALUES
 ('30303030-aaaa-bbbb-cccc-303030303030','13131313-1313-1313-1313-131313131313','MT573GX','Ford','Ka',2018,'Prata'),
 ('40404040-aaaa-bbbb-cccc-404040404040','14141414-1414-1414-1414-141414141414','CM226FD','Hyundai','HB20',2021,'Azul'),
 
--- segundo veículo (para testar escolha antes de iniciar)
+
 ('50505050-aaaa-bbbb-cccc-505050505050','33333333-3333-3333-3333-333333333333','HP417KS','Volkswagen','Polo',2021,'Cinza'),
 ('60606060-aaaa-bbbb-cccc-606060606060','88888888-8888-8888-8888-888888888888','SO908TN','Citroën','C3',2020,'Vermelho')
 ON CONFLICT (id) DO NOTHING;
 
--- ENUM: document_type
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'document_type') THEN
@@ -152,7 +152,7 @@ BEGIN
     END IF;
 END$$;
 
--- ENUM: document_status
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'document_status') THEN
@@ -160,7 +160,7 @@ BEGIN
     END IF;
 END$$;
 
--- TABLE: documents
+
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     driver_id UUID NOT NULL,
@@ -188,9 +188,9 @@ CREATE INDEX IF NOT EXISTS idx_documents_vehicle_id ON documents(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_documents_status ON documents(status);
 CREATE INDEX IF NOT EXISTS idx_documents_expires_at ON documents(expires_at);
 
--- Unicidade:
--- - CNH e CRIMINAL_RECORD: 1 por driver (vehicle_id NULL)
--- - CRLV: 1 por veículo (vehicle_id NOT NULL)
+
+
+
 CREATE UNIQUE INDEX IF NOT EXISTS uq_docs_driver_cnh
   ON documents (driver_id)
   WHERE type = 'CNH' AND vehicle_id IS NULL;
@@ -203,73 +203,73 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_docs_vehicle_crlv
   ON documents (vehicle_id)
   WHERE type = 'CRLV' AND vehicle_id IS NOT NULL;
 
--- SEED DOCUMENTOS
--- - CNH / CRIMINAL_RECORD: 1 por motorista
--- - CRLV: 1 por veículo (vehicle_id)
+
+
+
 INSERT INTO documents (driver_id, vehicle_id, type, issued_at, expires_at, status)
 VALUES
--- Rafael (em dia)
+
 ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', NULL, 'CNH', DATE '2024-01-10', DATE '2028-01-10', 'VALID'),
 ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', NULL, 'CRIMINAL_RECORD', DATE '2025-06-15', DATE '2027-06-15', 'VALID'),
 ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1', 'CRLV', DATE '2025-03-01', DATE '2027-03-01', 'VALID'),
 
--- Henrique (irregular: 1 doc expirando)
+
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', NULL, 'CNH', DATE '2024-02-10', DATE '2028-02-10', 'VALID'),
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', NULL, 'CRIMINAL_RECORD', DATE '2025-01-10', DATE '2027-01-10', 'VALID'),
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1', 'CRLV', DATE '2025-02-10', DATE '2026-02-18', 'EXPIRING'),
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '50505050-aaaa-bbbb-cccc-505050505050', 'CRLV', DATE '2025-07-10', DATE '2027-07-10', 'VALID'),
 
--- Antonio (banido com BOA reputação, por documento vencido — reputação e documentos não são proporcionais)
+
 ('cccccccc-cccc-cccc-cccc-cccccccccccc', NULL, 'CNH', DATE '2022-03-10', DATE '2024-03-10', 'EXPIRED'),
 ('cccccccc-cccc-cccc-cccc-cccccccccccc', NULL, 'CRIMINAL_RECORD', DATE '2025-03-10', DATE '2027-03-10', 'VALID'),
 ('cccccccc-cccc-cccc-cccc-cccccccccccc', 'c1c1c1c1-c1c1-c1c1-c1c1-c1c1c1c1c1c1', 'CRLV', DATE '2025-03-10', DATE '2027-03-10', 'VALID'),
 
--- Lucas (em dia)
+
 ('dddddddd-dddd-dddd-dddd-dddddddddddd', NULL, 'CNH', DATE '2024-04-10', DATE '2028-04-10', 'VALID'),
 ('dddddddd-dddd-dddd-dddd-dddddddddddd', NULL, 'CRIMINAL_RECORD', DATE '2025-04-10', DATE '2027-04-10', 'VALID'),
 ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'd1d1d1d1-d1d1-d1d1-d1d1-d1d1d1d1d1d1', 'CRLV', DATE '2025-04-10', DATE '2027-04-10', 'VALID'),
 
--- Diego (irregular)
+
 ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', NULL, 'CNH', DATE '2024-05-10', DATE '2028-05-10', 'VALID'),
 ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', NULL, 'CRIMINAL_RECORD', DATE '2025-05-10', DATE '2027-05-10', 'VALID'),
 ('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', 'e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1', 'CRLV', DATE '2025-05-10', DATE '2026-02-15', 'EXPIRING'),
 
--- Sofia (em dia)
+
 ('ffffffff-ffff-ffff-ffff-ffffffffffff', NULL, 'CNH', DATE '2024-06-10', DATE '2028-06-10', 'VALID'),
 ('ffffffff-ffff-ffff-ffff-ffffffffffff', NULL, 'CRIMINAL_RECORD', DATE '2025-06-10', DATE '2027-06-10', 'VALID'),
 ('ffffffff-ffff-ffff-ffff-ffffffffffff', 'f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1', 'CRLV', DATE '2025-06-10', DATE '2027-06-10', 'VALID'),
 ('ffffffff-ffff-ffff-ffff-ffffffffffff', '60606060-aaaa-bbbb-cccc-606060606060', 'CRLV', DATE '2025-06-10', DATE '2027-06-10', 'VALID'),
 
--- Valentina (em dia)
+
 ('10101010-1010-1010-1010-101010101010', NULL, 'CNH', DATE '2024-07-10', DATE '2028-07-10', 'VALID'),
 ('10101010-1010-1010-1010-101010101010', NULL, 'CRIMINAL_RECORD', DATE '2025-07-10', DATE '2027-07-10', 'VALID'),
 ('10101010-1010-1010-1010-101010101010', '10101010-aaaa-bbbb-cccc-101010101010', 'CRLV', DATE '2025-07-10', DATE '2027-07-10', 'VALID'),
 
--- Juan (banido por status/reputação; docs em dia)
+
 ('20202020-2020-2020-2020-202020202020', NULL, 'CNH', DATE '2024-08-10', DATE '2028-08-10', 'VALID'),
 ('20202020-2020-2020-2020-202020202020', NULL, 'CRIMINAL_RECORD', DATE '2025-08-10', DATE '2027-08-10', 'VALID'),
 ('20202020-2020-2020-2020-202020202020', '20202020-aaaa-bbbb-cccc-202020202020', 'CRLV', DATE '2025-08-10', DATE '2027-08-10', 'VALID'),
 
--- Mateo (em dia)
+
 ('30303030-3030-3030-3030-303030303030', NULL, 'CNH', DATE '2024-09-10', DATE '2028-09-10', 'VALID'),
 ('30303030-3030-3030-3030-303030303030', NULL, 'CRIMINAL_RECORD', DATE '2025-09-10', DATE '2027-09-10', 'VALID'),
 ('30303030-3030-3030-3030-303030303030', '30303030-aaaa-bbbb-cccc-303030303030', 'CRLV', DATE '2025-09-10', DATE '2027-09-10', 'VALID'),
 
--- Camila (irregular)
+
 ('40404040-4040-4040-4040-404040404040', NULL, 'CNH', DATE '2024-10-10', DATE '2028-10-10', 'VALID'),
 ('40404040-4040-4040-4040-404040404040', NULL, 'CRIMINAL_RECORD', DATE '2025-10-10', DATE '2027-10-10', 'VALID'),
 ('40404040-4040-4040-4040-404040404040', '40404040-aaaa-bbbb-cccc-404040404040', 'CRLV', DATE '2025-10-10', DATE '2026-02-22', 'EXPIRING')
 ON CONFLICT DO NOTHING;
 
--- ================================
--- MESSAGES (ADMIN INBOX)
--- ================================
 
--- ================================
--- TRIPS (simulação de corridas/entregas)
--- ================================
 
--- ENUM: trip_type
+
+
+
+
+
+
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'trip_type') THEN
@@ -277,7 +277,7 @@ BEGIN
     END IF;
 END$$;
 
--- ENUM: trip_status
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'trip_status') THEN
@@ -313,9 +313,9 @@ CREATE INDEX IF NOT EXISTS idx_trips_driver_id ON trips(driver_id);
 CREATE INDEX IF NOT EXISTS idx_trips_status ON trips(status);
 CREATE INDEX IF NOT EXISTS idx_trips_created_at ON trips(created_at);
 
--- ================================
--- WALLET (saldo mutável do motorista)
--- ================================
+
+
+
 
 DO $$
 BEGIN
@@ -359,9 +359,9 @@ CREATE TABLE IF NOT EXISTS wallet_transactions (
 CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id
     ON wallet_transactions(wallet_id);
 
--- ================================
--- AVALIAÇÕES NEGATIVAS (feedback + moderação do admin)
--- ================================
+
+
+
 
 CREATE TABLE IF NOT EXISTS negative_reviews (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -384,9 +384,9 @@ CREATE TABLE IF NOT EXISTS negative_reviews (
 CREATE INDEX IF NOT EXISTS idx_negative_reviews_driver_id ON negative_reviews(driver_id);
 CREATE INDEX IF NOT EXISTS idx_negative_reviews_created_at ON negative_reviews(created_at);
 
--- ================================
--- SEED: wallets + histórico inicial (5 corridas) + saldo ~ 50
--- ================================
+
+
+
 
 INSERT INTO wallets (driver_id, balance)
 VALUES
@@ -402,7 +402,7 @@ VALUES
 ('40404040-4040-4040-4040-404040404040', 50.00)
 ON CONFLICT (driver_id) DO NOTHING;
 
--- 5 corridas concluídas (Henrique) para o histórico na carteira
+
 INSERT INTO trips (id, user_id, driver_id, type, status, origin, destination, price, completed_at)
 VALUES
 ('b0b0b0b0-0000-0000-0000-000000000001','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','RIDE','COMPLETED','Centro','Palermo',10.00, NOW() - INTERVAL '5 days'),
@@ -412,7 +412,7 @@ VALUES
 ('b0b0b0b0-0000-0000-0000-000000000005','55555555-5555-5555-5555-555555555555','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','RIDE','COMPLETED','Retiro','Puerto Madero',10.00, NOW() - INTERVAL '1 days')
 ON CONFLICT (id) DO NOTHING;
 
--- transações CREDIT com taxa de 25% já aplicada (líquido)
+
 INSERT INTO wallet_transactions (wallet_id, trip_id, type, amount, created_at)
 SELECT w.id, t.id, 'CREDIT', ROUND(t.price * 0.75, 2), t.completed_at
 FROM wallets w
@@ -427,18 +427,18 @@ WHERE w.driver_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
   )
 ON CONFLICT DO NOTHING;
 
--- avaliações negativas recentes (visíveis ao motorista e ao admin)
+
 INSERT INTO negative_reviews (driver_id, user_id, reason, created_at)
 VALUES
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','55555555-5555-5555-5555-555555555555','Comentários inadequados durante a corrida.', NOW() - INTERVAL '3 days'),
 ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','55555555-5555-5555-5555-555555555555','Direção agressiva (frenagens bruscas).', NOW() - INTERVAL '1 days')
 ON CONFLICT DO NOTHING;
 
--- ================================
--- RENEWALS (solicitações de atualização)
--- - motorista solicita atualização de documentos e/ou adição de veículo
--- - admin valida e aprova em /admin/renewals
--- ================================
+
+
+
+
+
 
 DO $$
 BEGIN
@@ -512,7 +512,7 @@ CREATE TABLE IF NOT EXISTS renewal_vehicle_add (
 );
 
 
--- ENUM: message_sender_role
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'message_sender_role') THEN
@@ -520,7 +520,7 @@ BEGIN
     END IF;
 END$$;
 
--- ENUM: system_message_event
+
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'system_message_event') THEN
@@ -528,7 +528,7 @@ BEGIN
     END IF;
 END$$;
 
--- TABLE: messages
+
 CREATE TABLE IF NOT EXISTS messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     driver_id UUID NOT NULL,
@@ -537,8 +537,8 @@ CREATE TABLE IF NOT EXISTS messages (
     sender_user_id UUID,
     receiver_user_id UUID,
     body TEXT NOT NULL,
-    -- “Visto” (read receipts) agregados por papel (admin/driver).
-    -- Motivo: pode existir mais de um admin; então não amarramos a um admin específico.
+    
+    
     read_by_admin_at TIMESTAMP,
     read_by_driver_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -549,7 +549,7 @@ CREATE TABLE IF NOT EXISTS messages (
         ON DELETE CASCADE
 );
 
--- Se a tabela já existia, garante a coluna também
+
 ALTER TABLE messages
   ADD COLUMN IF NOT EXISTS system_event system_message_event;
 
@@ -562,7 +562,7 @@ ALTER TABLE messages
 CREATE INDEX IF NOT EXISTS idx_messages_driver_id ON messages(driver_id);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 
--- SEED: conversa do admin com Rafael (inclui SYSTEM + ADMIN + DRIVER)
+
 INSERT INTO messages (driver_id, sender_role, system_event, sender_user_id, receiver_user_id, body, created_at)
 VALUES
 ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','SYSTEM','BAN', NULL, '22222222-2222-2222-2222-222222222222', 'Conta bloqueada: documento vencido. Atualize seus documentos para voltar a operar.', NOW() - INTERVAL '2 days'),

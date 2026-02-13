@@ -12,7 +12,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// TODAS as rotas estão aqui
+
 app.use(routes);
 
 export default app;

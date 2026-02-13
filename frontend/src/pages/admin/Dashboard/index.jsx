@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles.css";
 
-// Valores mockados conforme combinado
+
 const MOCK_ACCEPTED_24H = 3;
 const MOCK_REQUESTS = 12;
 

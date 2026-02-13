@@ -11,7 +11,7 @@
   position: relative;
 }
 
-/* ===== BLOQUEIO (BANIDO) ===== */
+
 .driver-home-blocked {
   position: absolute;
   inset: 0;
@@ -19,9 +19,9 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  z-index: 28; /* acima do mapa, abaixo da sidebar */
+  z-index: 28; 
   background: rgba(2, 6, 23, 0.35);
-  pointer-events: all; /* bloqueia interações no mapa */
+  pointer-events: all; 
 }
 
 .driver-home-blocked-card {
@@ -68,7 +68,7 @@
   line-height: 1.35;
 }
 
-/* ===== MODAL BANIDO (AO LOGAR) ===== */
+
 .driver-home-modal-overlay {
   position: fixed;
   inset: 0;
@@ -346,7 +346,7 @@
   width: min(280px, 100%);
 }
 
-/* barra de aceitar/recusar no lugar do INICIAR */
+
 .offer-bar {
   position: fixed;
   bottom: 28px;
@@ -401,7 +401,7 @@
   cursor: not-allowed;
 }
 
-/* ===== GANHOS ===== */
+
 .earnings-box {
   position: fixed;
   top: 16px;
@@ -420,7 +420,7 @@
   color: #fcbf45;
 }
 
-/* ===== BOTÃO INICIAR ===== */
+
 .startButton {
   position: fixed;
   bottom: 28px;
@@ -451,7 +451,7 @@
   transform: translateX(-50%);
 }
 
-/* anel branco */
+
 .ring {
   position: absolute;
   width: 72px;
@@ -460,7 +460,7 @@
   border-radius: 50%;
 }
 
-/* texto */
+
 .startText {
   position: relative;
   color: #ffffff;
@@ -470,7 +470,7 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* pulso */
+
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(252, 191, 69, 0.6);

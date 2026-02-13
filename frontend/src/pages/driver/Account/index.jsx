@@ -25,7 +25,7 @@ export default function DriverAccount() {
   const [negativeReviews, setNegativeReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
 
-  // mock permitido para número de viagens e tempo de conta (reputação vem real)
+  
   const totalTrips = user?.driver?.total_trips ?? 32;
   const accountAge = "2 anos e 3 meses";
 
@@ -99,17 +99,17 @@ export default function DriverAccount() {
 
   useEffect(() => {
     loadDocs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [user]);
 
   useEffect(() => {
     loadVehicles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [user]);
 
   useEffect(() => {
     loadNegativeReviews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [user]);
 
   useEffect(() => {
@@ -128,14 +128,14 @@ export default function DriverAccount() {
       loadVehicles();
       loadNegativeReviews();
       if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
-      // fallback: refaz mais uma vez para ficar robusto
+      
       reloadTimerRef.current = setTimeout(() => {
         loadDocs();
         loadVehicles();
         loadNegativeReviews();
       }, 900);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [events]);
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function DriverAccount() {
   }, []);
 
   if (!user) {
-    return null; // poderia exibir loader global
+    return null; 
   }
 
   const initials =
@@ -167,7 +167,7 @@ export default function DriverAccount() {
 
   return (
     <div className="driver-account">
-      {/* BANNER */}
+      {}
       <div className="account-banner">
         <img src={buenosAiresImage} alt="Buenos Aires" />
         <div className="account-banner-overlay" />
@@ -180,10 +180,10 @@ export default function DriverAccount() {
         </div>
       </div>
 
-      {/* BLOCO CENTRAL (MÉTRICAS + DOCUMENTOS) */}
+      {}
       <div className="account-main">
         <div className="account-main-inner">
-          {/* MÉTRICAS RÁPIDAS */}
+          {}
           <section className="account-metrics">
             <div className="metric-card">
               <span className="metric-label">Reputação</span>
@@ -201,7 +201,7 @@ export default function DriverAccount() {
             </div>
           </section>
 
-          {/* DOCUMENTOS */}
+          {}
           <section className="account-documents">
             <h2>Documentos</h2>
 
@@ -263,7 +263,6 @@ export default function DriverAccount() {
             </div>
           </section>
 
-          {/* MEUS VEÍCULOS */}
           <section className="account-vehicles">
             <h2>Meus veículos</h2>
 
@@ -316,7 +315,6 @@ export default function DriverAccount() {
             </div>
           </section>
 
-          {/* AVALIAÇÕES NEGATIVAS */}
           <section className="account-negative-reviews">
             <h2>Avaliações negativas recentes</h2>
 

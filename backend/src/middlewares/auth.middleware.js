@@ -1,6 +1,6 @@
 import UsersRepository from '../modules/users/repository.js';
 
-// Middleware simples (token = userId)
+
 export default async function authMiddleware(req, res, next) {
   try {
     const auth = req.headers.authorization || '';
@@ -10,7 +10,7 @@ export default async function authMiddleware(req, res, next) {
       return next();
     }
 
-    // token aqui é o próprio userId (DEV)
+    
     const user = await UsersRepository.findById(token);
     if (!user) {
       return next();

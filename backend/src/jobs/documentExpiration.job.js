@@ -2,13 +2,13 @@ import { pool } from '../config/database.js';
 import UsersRepository from '../modules/users/repository.js';
 import MessagesService from '../modules/messages/service.js';
 
-/**
- * Job diário:
- * - verifica documentos vencidos ou próximos do vencimento
- * - atualiza status do documento
- * - atualiza status do usuário
- * - envia mensagens SYSTEM no chat (tempo real via WS) quando o STATUS do motorista muda
- */
+
+
+
+
+
+
+
 async function documentExpirationJob() {
   console.log('⏱️ Iniciando job de verificação de documentos');
 
@@ -85,14 +85,14 @@ async function documentExpirationJob() {
       return 'Situação regularizada. Sua conta está liberada para operar.';
     };
 
-    // processa por motorista (evita spam: só quando o status muda)
+    
     for (const entry of byDriver.values()) {
       const oldUserStatus = entry.oldUserStatus;
 
       const newStatuses = entry.docs.map((d) => calcDocStatus(d.expires_at));
       const newOverall = overallFromStatuses(newStatuses);
 
-      // Atualiza docs que mudaram
+      
       for (let i = 0; i < entry.docs.length; i++) {
         const doc = entry.docs[i];
         const nextStatus = newStatuses[i];
@@ -104,9 +104,9 @@ async function documentExpirationJob() {
         }
       }
 
-      // Atualiza usuário conforme:
-      // - reputação (<4) tem prioridade (banido)
-      // - senão, documentos (expired/expiring/valid)
+      
+      
+      
       const expectedUserStatus = expectedStatusFrom({
         reputationScore: entry.reputationScore,
         overallDocStatus: newOverall,
@@ -116,9 +116,9 @@ async function documentExpirationJob() {
         await UsersRepository.updateStatus(entry.userId, expectedUserStatus);
       }
 
-      // Mensagem SYSTEM:
-      // - quando muda o status do usuário
-      // - OU quando o status já é IRREGULAR/BANNED e ainda não existe uma mensagem SYSTEM desse tipo
+      
+      
+      
       const evt = systemEventFromUserStatus(expectedUserStatus);
       let shouldSend = expectedUserStatus !== oldUserStatus;
 

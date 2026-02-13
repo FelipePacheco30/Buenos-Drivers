@@ -2,9 +2,9 @@ import TripsService from './service.js';
 import DriversRepository from '../drivers/repository.js';
 
 class TripsController {
-  /**
-   * Inicia uma viagem
-   */
+  
+
+
   async start(req, res, next) {
     try {
       const driver = await DriversRepository.findByUserId(req.user.id);
@@ -25,9 +25,9 @@ class TripsController {
     }
   }
 
-  /**
-   * Finaliza uma viagem ativa
-   */
+  
+
+
   async finish(req, res, next) {
     try {
       const driver = await DriversRepository.findByUserId(req.user.id);
@@ -47,9 +47,9 @@ class TripsController {
     }
   }
 
-  /**
-   * Histórico de viagens do motorista
-   */
+  
+
+
   async history(req, res, next) {
     try {
       const driver = await DriversRepository.findByUserId(req.user.id);

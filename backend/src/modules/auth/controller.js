@@ -10,7 +10,7 @@ class AuthController {
       return res.status(401).json({ message: 'Credenciais inválidas' });
     }
 
-    // LOGIN SIMPLES (SEM HASH)
+    
     if (password !== user.password) {
       return res.status(401).json({ message: 'Credenciais inválidas' });
     }

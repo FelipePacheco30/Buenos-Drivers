@@ -1,14 +1,14 @@
-/* CONTAINER GERAL */
+
 .driver-account {
   min-height: 100vh;
-  background: #75aadb; /* azul principal de fundo */
+  background: #75aadb; 
   padding-bottom: 40px;
   color: #1f2933;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
 
-/* BANNER SUPERIOR */
+
 .account-banner {
   position: relative;
   width: 100%;
@@ -68,10 +68,10 @@
   color: #ffffff;
 }
 
-/* MÉTRICAS RÁPIDAS */
-/* BLOCO CENTRAL BRANCO (MÉTRICAS + DOCUMENTOS) */
+
+
 .account-main {
-  margin-top: -8px; /* afasta um pouco do banner */
+  margin-top: -8px; 
   padding: 0 16px;
 }
 
@@ -79,14 +79,14 @@
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  padding: 24px 16px 20px; /* mais respiro acima das métricas */
+  padding: 24px 16px 20px; 
 }
 
-/* MÉTRICAS RÁPIDAS (EM LINHA, NÃO “BOTÕES”) */
+
 .account-metrics {
   display: flex;
   gap: 16px;
-  margin-bottom: 28px; /* mais espaço até a seção de documentos */
+  margin-bottom: 28px; 
 }
 
 .metric-card {
@@ -109,9 +109,9 @@
   color: #111827;
 }
 
-/* DOCUMENTOS */
+
 .account-documents {
-  margin-top: 8px; /* pequena distância, o espaçamento maior já vem das métricas */
+  margin-top: 8px; 
 }
 
 .account-documents h2 {
@@ -135,7 +135,7 @@
   gap: 12px;
 }
 
-/* VEÍCULOS */
+
 .account-vehicles {
   margin-top: 22px;
 }
@@ -228,7 +228,7 @@
   background: rgba(239, 68, 68, 0.16);
 }
 
-/* AVALIAÇÕES NEGATIVAS */
+
 .account-negative-reviews {
   margin-top: 22px;
 }
@@ -381,7 +381,7 @@
   background: #fbb02a;
 }
 
-/* AÇÕES */
+
 .account-actions {
   display: flex;
   justify-content: center;
@@ -389,7 +389,7 @@
   padding: 18px 16px 0;
 }
 
-/* BOTÃO SAIR */
+
 .logout-button {
   background: #fcbf45;
   border: none;
@@ -421,7 +421,7 @@
   box-shadow: 0 0 0 3px rgba(117, 170, 219, 0.14);
 }
 
-/* DESKTOP */
+
 @media (min-width: 768px) {
   .driver-account {
     max-width: 960px;

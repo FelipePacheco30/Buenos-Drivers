@@ -78,7 +78,7 @@ class MessagesService {
   async sendAdminMessageRealtime({ adminUserId, driverId, body }) {
     const message = await this.sendAdminMessage({ adminUserId, driverId, body });
 
-    // envia para o motorista + para o próprio admin (se conectado) + para outros admins
+    
     const driver = await DriversRepository.getForAdminByDriverId(driverId);
     const admins = await UsersRepository.listAdmins();
 
@@ -118,7 +118,7 @@ class MessagesService {
       message,
     };
 
-    // envia para todos os admins + para o motorista
+    
     sendToUser(driverUserId, payload);
     admins.forEach((a) => sendToUser(a.id, payload));
 
@@ -151,7 +151,7 @@ class MessagesService {
       message,
     };
 
-    // envia para todos os admins + para o motorista (receiverUserId)
+    
     if (receiverUserId) sendToUser(receiverUserId, payload);
     admins.forEach((a) => sendToUser(a.id, payload));
 

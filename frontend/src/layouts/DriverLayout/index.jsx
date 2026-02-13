@@ -10,12 +10,12 @@ export default function DriverLayout() {
 
   if (loading) return null;
 
-  // impede acessar /driver/* estando logado como ADMIN (evita 403 em endpoints DRIVER)
+  
   if (user?.role && user.role !== "DRIVER") {
     return <Navigate to={user.role === "ADMIN" ? "/admin" : "/login"} replace />;
   }
 
-  // motorista banido: bloqueia carteira (e mantém mensagens/conta acessíveis)
+  
   if (user?.status === "BANNED") {
     const p = location.pathname || "";
     if (p.startsWith("/driver/wallet")) {
@@ -25,10 +25,10 @@ export default function DriverLayout() {
 
   return (
     <div className="driver-layout">
-      {/* Sidebar com hambúrguer próprio */}
+      {}
       <Sidebar />
 
-      {/* Conteúdo do Outlet */}
+      {}
       <div className="driver-layout-content">
         <Outlet />
       </div>

@@ -73,7 +73,7 @@ class MessagesRepository {
   }
 
   async markReadByAdmin(driverId) {
-    // Admin “lê” mensagens enviadas pelo motorista
+    
     const { rows } = await query(
       `
       UPDATE messages
@@ -89,7 +89,7 @@ class MessagesRepository {
   }
 
   async markReadByDriver(driverId) {
-    // Motorista “lê” mensagens enviadas por ADMIN/SYSTEM
+    
     const { rows } = await query(
       `
       UPDATE messages

@@ -119,22 +119,22 @@
   margin-top: 14px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px; /* mais espaçamento entre motoristas */
+  gap: 16px; 
 }
 
 .admin-driver-row {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(2, 6, 23, 0.14); /* divisões mais visíveis */
+  border: 1px solid rgba(2, 6, 23, 0.14); 
   background: #ffffff;
   border-radius: 0;
-  padding: 22px 18px; /* mais alto e espaçado */
+  padding: 22px 18px; 
   cursor: pointer;
   display: flex;
   gap: 14px;
   align-items: center;
   box-shadow: 0 12px 26px rgba(2, 6, 23, 0.08);
-  min-height: 108px; /* garante espaço pro conteúdo */
+  min-height: 108px; 
 }
 
 .admin-driver-row:hover {
@@ -202,7 +202,7 @@
 }
 
 @media (min-width: 980px) {
-  /* 3 motoristas por fileira (somente em telas maiores) */
+  
   .admin-drivers-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
@@ -315,7 +315,7 @@
   color: #b91c1c;
 }
 
-/* DETAIL */
+
 .admin-drivers-topbar {
   display: flex;
   align-items: center;

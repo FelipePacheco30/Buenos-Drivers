@@ -2,7 +2,7 @@ import { query } from '../../config/database.js';
 
 class VehiclesRepository {
   async create({ userId, plate, brand, kind, model, year, color }) {
-    // compat: se o banco ainda não tiver coluna "kind", faz fallback sem ela
+    
     try {
       const { rows } = await query(
         `

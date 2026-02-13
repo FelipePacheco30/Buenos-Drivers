@@ -3,7 +3,7 @@ import { Router } from 'express';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import roleMiddleware from '../middlewares/role.middleware.js';
 
-// Controllers
+
 import AuthController from '../modules/auth/controller.js';
 import UsersController from '../modules/users/controller.js';
 import DriversController from '../modules/drivers/controller.js';
@@ -20,9 +20,9 @@ import ReviewsController from '../modules/reviews/controller.js';
 
 const routes = Router();
 
-/**
- * Helper para evitar crash silencioso de rota undefined
- */
+
+
+
 const safe = (fn, name) => {
   if (typeof fn !== 'function') {
     throw new Error(`❌ Controller method não encontrado: ${name}`);
@@ -30,38 +30,38 @@ const safe = (fn, name) => {
   return fn;
 };
 
-/**
- * =====================
- * Healthcheck
- * =====================
- */
+
+
+
+
+
 routes.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-/**
- * =====================
- * Rotas públicas
- * =====================
- */
+
+
+
+
+
 routes.post(
   '/auth/login',
   safe(AuthController.login, 'AuthController.login')
 );
 
 
-/**
- * =====================
- * Rotas autenticadas
- * =====================
- */
+
+
+
+
+
 routes.use(authMiddleware);
 
-/**
- * =====================
- * Usuário
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/users/me',
   safe(UsersController.me, 'UsersController.me')
@@ -72,22 +72,22 @@ routes.put(
   safe(UsersController.update, 'UsersController.update')
 );
 
-/**
- * =====================
- * Motorista
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/drivers/me',
   roleMiddleware('DRIVER'),
   safe(DriversController.me, 'DriversController.me')
 );
 
-/**
- * =====================
- * Admin: Motoristas
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/admin/drivers',
   roleMiddleware('ADMIN'),
@@ -100,11 +100,11 @@ routes.get(
   safe(DriversController.adminDetail, 'DriversController.adminDetail')
 );
 
-/**
- * =====================
- * Admin: Caixa de entrada
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/admin/messages',
   roleMiddleware('ADMIN'),
@@ -129,11 +129,11 @@ routes.post(
   safe(MessagesController.adminSendSystem, 'MessagesController.adminSendSystem')
 );
 
-/**
- * =====================
- * Driver: Caixa de entrada (chat)
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/driver/messages',
   roleMiddleware('DRIVER'),
@@ -152,22 +152,22 @@ routes.post(
   safe(MessagesController.driverMarkRead, 'MessagesController.driverMarkRead')
 );
 
-/**
- * =====================
- * Driver: Renovação (solicitações)
- * =====================
- */
+
+
+
+
+
 routes.post(
   '/driver/renewals',
   roleMiddleware('DRIVER'),
   safe(RenewalsController.driverCreate, 'RenewalsController.driverCreate')
 );
 
-/**
- * =====================
- * Veículos
- * =====================
- */
+
+
+
+
+
 routes.post(
   '/vehicles',
   roleMiddleware('DRIVER'),
@@ -180,11 +180,11 @@ routes.get(
   safe(VehiclesController.list, 'VehiclesController.list')
 );
 
-/**
- * =====================
- * Documentos
- * =====================
- */
+
+
+
+
+
 routes.post(
   '/documents',
   roleMiddleware('DRIVER'),
@@ -197,11 +197,11 @@ routes.get(
   safe(DocumentsController.list, 'DocumentsController.list')
 );
 
-/**
- * =====================
- * Admin: Renovação (solicitações)
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/admin/renewals',
   roleMiddleware('ADMIN'),
@@ -220,11 +220,11 @@ routes.post(
   safe(RenewalsController.adminApprove, 'RenewalsController.adminApprove')
 );
 
-/**
- * =====================
- * Viagens
- * =====================
- */
+
+
+
+
+
 routes.post(
   '/trips/start',
   roleMiddleware('DRIVER'),
@@ -243,11 +243,11 @@ routes.get(
   safe(TripsController.history, 'TripsController.history')
 );
 
-/**
- * =====================
- * Carteira (driver)
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/driver/wallet',
   roleMiddleware('DRIVER'),
@@ -260,11 +260,11 @@ routes.post(
   safe(WalletController.withdraw, 'WalletController.withdraw')
 );
 
-/**
- * =====================
- * Avaliações negativas
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/driver/reviews/negative',
   roleMiddleware('DRIVER'),
@@ -283,33 +283,33 @@ routes.delete(
   safe(ReviewsController.adminDeleteNegative, 'ReviewsController.adminDeleteNegative')
 );
 
-/**
- * =====================
- * Pagamentos
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/payments/earnings',
   roleMiddleware('DRIVER'),
   safe(PaymentsController.earnings, 'PaymentsController.earnings')
 );
 
-/**
- * =====================
- * Reputação
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/reputation',
   roleMiddleware('DRIVER'),
   safe(ReputationController.get, 'ReputationController.get')
 );
 
-/**
- * =====================
- * Rotas permitidas mesmo BANIDO
- * =====================
- */
+
+
+
+
+
 routes.get(
   '/notifications',
   safe(NotificationsController.list, 'NotificationsController.list')

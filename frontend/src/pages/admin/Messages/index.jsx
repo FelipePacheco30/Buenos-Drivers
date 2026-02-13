@@ -8,7 +8,7 @@ import "./styles.css";
 function stateLabel(userStatus, docsStatus) {
   if (userStatus === "BANNED") return "Banido";
   if (userStatus === "IRREGULAR") return "Irregular";
-  // fallback para dados antigos
+  
   if (docsStatus === "EXPIRED") return "Banido";
   if (docsStatus === "EXPIRING") return "Irregular";
   return "Em dia";
@@ -17,7 +17,7 @@ function stateLabel(userStatus, docsStatus) {
 function stateClass(userStatus, docsStatus) {
   if (userStatus === "BANNED") return "danger";
   if (userStatus === "IRREGULAR") return "warning";
-  // fallback para dados antigos
+  
   if (docsStatus === "EXPIRED") return "danger";
   if (docsStatus === "EXPIRING") return "warning";
   return "success";
@@ -146,7 +146,7 @@ export default function AdminMessages() {
     loadThread();
   }, [driverId]);
 
-  // realtime: recebe mensagens novas (admin/driver/system) e atualiza lista e thread
+  
   useEffect(() => {
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_MESSAGE") return;
@@ -154,12 +154,12 @@ export default function AdminMessages() {
     const msg = last.message;
     const dId = last.driver_id;
 
-    // atualiza thread se estamos na conversa aberta
+    
     if (driverId && dId === driverId) {
       setThread((prev) => (prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]));
     }
 
-    // atualiza preview na lista
+    
     setConversations((prev) =>
       prev.map((c) =>
         c.driver_id === dId
@@ -175,7 +175,7 @@ export default function AdminMessages() {
     );
   }, [events, driverId]);
 
-  // realtime: “visto” (read receipts)
+  
   useEffect(() => {
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_READ") return;
@@ -231,7 +231,7 @@ export default function AdminMessages() {
       }
 
       setDraft("");
-      // o WS vai refletir em tempo real; ainda assim, adiciona local pra ficar instantâneo
+      
       setThread((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
     } catch {
       alert("Erro ao enviar mensagem");

@@ -187,7 +187,7 @@
   border: 1px solid rgba(2, 6, 23, 0.12);
 }
 
-/* DETAIL */
+
 .admin-requests-topbar {
   display: flex;
   align-items: center;
@@ -375,7 +375,7 @@
   cursor: not-allowed;
 }
 
-/* Shared chips/pills (copiado do padrão admin) */
+
 .chip {
   border: 1px solid rgba(2, 6, 23, 0.1);
   background: #ffffff;

@@ -40,7 +40,7 @@ export default function DriverWallet() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function DriverWallet() {
     }
     processedEventsRef.current = events.length;
     if (shouldReload) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [events]);
 
   function fmtDate(dateLike) {

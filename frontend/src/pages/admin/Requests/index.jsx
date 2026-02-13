@@ -77,7 +77,7 @@ export default function AdminRequests() {
     validated: true,
   });
 
-  // validação local (não persiste)
+  
   const [validatedByRequest, setValidatedByRequest] = useState({});
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function AdminRequests() {
       });
     }
 
-    // filtros por checkbox (whatsapp-like)
+    
     list = list.filter((r) => {
       const validated = validatedByRequest[r.id] || {};
       const docsOk = r.documents.every((d) => !!validated[`doc:${d.type}`]);

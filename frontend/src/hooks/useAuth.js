@@ -1,4 +1,4 @@
-// hooks/useAuth.js
+
 import { useState, useEffect, useCallback } from "react";
 import { login as apiLogin, logout as apiLogout, getToken } from "../services/api";
 
@@ -29,7 +29,7 @@ export default function useAuth() {
     apiLogout();
     setUser(null);
     sessionStorage.removeItem("user");
-    // compat
+    
     localStorage.removeItem("user");
   }, []);
 

@@ -55,7 +55,7 @@ export default function DriverMessages() {
     endRef.current.scrollIntoView({ behavior: "smooth" });
   }, [loading, thread]);
 
-  // marca como lidas ao entrar na tela (para o admin ver o “visto”)
+  
   useEffect(() => {
     let cancelled = false;
     async function markRead() {
@@ -68,7 +68,7 @@ export default function DriverMessages() {
           },
         });
       } catch {
-        // silencioso
+        
       } finally {
         if (cancelled) return;
       }
@@ -79,18 +79,18 @@ export default function DriverMessages() {
     };
   }, []);
 
-  // realtime: adiciona novas mensagens da conversa do motorista
+  
   useEffect(() => {
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_MESSAGE") return;
 
-    // para o motorista, é sempre a própria conversa: só append
+    
     setThread((prev) =>
       prev.some((m) => m.id === last.message.id) ? prev : [...prev, last.message]
     );
   }, [events]);
 
-  // realtime: “visto” (read receipts)
+  
   useEffect(() => {
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_READ") return;
@@ -117,11 +117,11 @@ export default function DriverMessages() {
     const msg = draft.trim();
     if (!msg) return;
 
-    // tenta WS primeiro
+    
     const ok = sendMessage({ type: "CHAT_SEND", body: msg });
     setDraft("");
 
-    // fallback REST caso WS ainda não esteja conectado
+    
     if (!ok) {
       try {
         const token = getToken();
@@ -134,7 +134,7 @@ export default function DriverMessages() {
           body: JSON.stringify({ body: msg }),
         });
       } catch {
-        // silencioso
+        
       }
     }
   }

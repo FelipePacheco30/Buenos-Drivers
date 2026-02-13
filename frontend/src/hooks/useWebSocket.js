@@ -1,6 +1,6 @@
-// hooks/useWebSocket.js
-// Conexão WS compartilhada (singleton) para evitar múltiplas conexões
-// e perda de eventos quando páginas montam/desmontam.
+
+
+
 import { useEffect, useState } from "react";
 
 let sharedWs = null;
@@ -32,7 +32,7 @@ function connect(baseUrl, userId) {
       try {
         sharedWs.close();
       } catch {
-        // ignore
+        
       }
       sharedWs = null;
     }
@@ -52,7 +52,7 @@ function connect(baseUrl, userId) {
         sharedEvents = [...sharedEvents, data].slice(-300);
         notify();
       } catch {
-        // ignora
+        
       }
     };
 
@@ -67,7 +67,7 @@ function connect(baseUrl, userId) {
     };
 
     ws.onerror = () => {
-      // erro geralmente dispara onclose em seguida
+      
     };
   } catch {
     isConnecting = false;
@@ -96,12 +96,12 @@ export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
 
     const sub = (evs) => setEvents(evs);
     subscribers.add(sub);
-    // entrega snapshot atual
+    
     sub(sharedEvents);
 
     return () => {
       subscribers.delete(sub);
-      // opcional: se não há mais ninguém usando, fecha a conexão
+      
       if (subscribers.size === 0) {
         if (reconnectTimer) clearTimeout(reconnectTimer);
         reconnectTimer = null;
@@ -109,7 +109,7 @@ export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
           try {
             sharedWs.close();
           } catch {
-            // ignore
+            
           }
         }
         sharedWs = null;

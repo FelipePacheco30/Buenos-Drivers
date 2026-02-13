@@ -28,7 +28,7 @@ function isISODate(dateStr) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateStr || ''))) return false;
   const d = new Date(`${dateStr}T12:00:00Z`);
   if (Number.isNaN(d.getTime())) return false;
-  // garante que não virou outra data
+  
   const [y, m, day] = String(dateStr).split('-').map((n) => Number(n));
   return (
     d.getUTCFullYear() === y &&
@@ -51,13 +51,13 @@ class RenewalsService {
     const currentYear = new Date().getFullYear();
     const todayISO = new Date().toISOString().slice(0, 10);
 
-    // valida limite de veículos
+    
     if (hasVehicleAdd) {
       const existing = await VehiclesRepository.findByUserId(userId);
       if ((existing || []).length >= 2) throw new Error('VEHICLE_LIMIT');
     }
 
-    // valida que os docs enviados são só EXPIRING/EXPIRED no estado atual
+    
     const current = await DocumentsRepository.findByDriverId(driver.id);
     const byKey = new Map();
     (current || []).forEach((d) => {
@@ -156,7 +156,7 @@ class RenewalsService {
     if (!detail) throw new Error('RENEWAL_NOT_FOUND');
     if (detail.status !== 'PENDING') throw new Error('RENEWAL_NOT_PENDING');
 
-    // aplica docs
+    
     for (const d of detail.documents || []) {
       const nextStatus = calcDocStatus(d.expires_at);
       await DocumentsRepository.upsert({
@@ -169,7 +169,7 @@ class RenewalsService {
       });
     }
 
-    // adiciona veículo (se houver)
+    
     if (detail.vehicle_add) {
       const v = detail.vehicle_add;
       const created = await VehiclesRepository.create({
@@ -195,10 +195,10 @@ class RenewalsService {
 
     const updated = await RenewalsRepository.setStatus(id, 'APPROVED');
 
-    // admin atualiza lista em tempo real
+    
     broadcastToRole('ADMIN', { type: 'RENEWAL_UPDATED', renewal_id: id, status: 'APPROVED' });
 
-    // motorista atualiza UI em tempo real (documentos/veículos)
+    
     if (detail.user_id) {
       sendToUser(detail.user_id, {
         type: 'RENEWAL_APPROVED',

@@ -14,7 +14,7 @@ function randomNearby(position, radiusKm = 0.6) {
   const [lat, lng] = position;
   const r = Math.random() * radiusKm;
   const theta = Math.random() * 2 * Math.PI;
-  const dLat = (r * Math.cos(theta)) / 111; // ~km per degree lat
+  const dLat = (r * Math.cos(theta)) / 111; 
   const dLng = (r * Math.sin(theta)) / (111 * Math.cos((lat * Math.PI) / 180));
   return [lat + dLat, lng + dLng];
 }
@@ -45,12 +45,12 @@ export default function DriverHome() {
 
   const isBanned = user?.status === "BANNED";
 
-  // fluxo de simulação
+  
   const [showModeModal, setShowModeModal] = useState(false);
   const [work, setWork] = useState({ delivery: true, ride: true });
-  const [phase, setPhase] = useState("IDLE"); // IDLE|SEARCHING|CALCULATING|OFFER|IN_TRIP|RATING
-  const [searchSeconds, setSearchSeconds] = useState(0); // conta 0 -> 10
-  const [offer, setOffer] = useState(null); // { type, price, pickupRaw }
+  const [phase, setPhase] = useState("IDLE"); 
+  const [searchSeconds, setSearchSeconds] = useState(0); 
+  const [offer, setOffer] = useState(null); 
   const [offerCountdown, setOfferCountdown] = useState(15);
   const [simulating, setSimulating] = useState(false);
   const [accepting, setAccepting] = useState(false);
@@ -58,13 +58,13 @@ export default function DriverHome() {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(0);
 
-  // mapa/rota
+  
   const [driverPos, setDriverPos] = useState(START_DRIVER_POSITION);
   const [driverHeading, setDriverHeading] = useState(0);
   const [pickupPos, setPickupPos] = useState(null);
   const [destPos, setDestPos] = useState(null);
   const [routePositions, setRoutePositions] = useState(null);
-  const [routeCursor, setRouteCursor] = useState(0); // para “apagar” o trajeto por trás
+  const [routeCursor, setRouteCursor] = useState(0); 
   const [moving, setMoving] = useState(false);
   const moveTimerRef = useRef(null);
   const searchTimerRef = useRef(null);
@@ -83,14 +83,14 @@ export default function DriverHome() {
     return "Você está banido e não pode realizar viagens até regularizar sua situação.";
   }, []);
 
-  // garante que o motorista inicia em uma rua (snap 1x)
+  
   useEffect(() => {
     async function snapInitial() {
       const snapped = await snapToRoad(START_DRIVER_POSITION);
       setDriverPos(snapped);
     }
     snapInitial();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function DriverHome() {
           setEarnings(Number(data.daily_earnings || 0));
         }
       } catch {
-        // ignore
+        
       }
     }
     if (!isBanned) loadEarnings();
@@ -150,7 +150,7 @@ export default function DriverHome() {
       setShowVehicleModal(true);
       return;
     }
-    // 1 veículo: segue direto
+    
     if (vehicles.length === 1) setSelectedVehicleId(vehicles[0].id);
     setShowModeModal(true);
   }
@@ -207,7 +207,7 @@ export default function DriverHome() {
     if (phase !== "OFFER") return;
     if (offerCountdown !== 0) return;
     declineOffer();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [phase, offerCountdown]);
 
   useEffect(() => {
@@ -233,7 +233,7 @@ export default function DriverHome() {
       setPhase("OFFER");
     }
     prepareRoute();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [phase, offer]);
 
   async function acceptOffer() {
@@ -263,11 +263,11 @@ export default function DriverHome() {
 
       setTripId(data.id);
       setOffer(null);
-      // anima o motorista pela rota até o destino
+      
       setPhase("IN_TRIP");
       animateDriver(routePositions);
     } catch {
-      // ignore
+      
     } finally {
       setAccepting(false);
     }
@@ -307,14 +307,14 @@ export default function DriverHome() {
       }
       const prev = points[idx - 1];
       const next = points[idx];
-      // a frente do carro (driver.png) aponta para a DIREITA (leste)
-      // bearingDeg: 0=norte, 90=leste. Então rotacionamos com offset -90°.
+      
+      
       const b = bearingDeg(prev, next);
       const heading = (b + 270) % 360;
       setDriverHeading(heading);
       setDriverPos(next);
-      setRouteCursor(idx); // some o que ficou pra trás
-    }, 240); // mais devagar
+      setRouteCursor(idx); 
+    }, 240); 
   }
 
   async function finishTrip() {
@@ -330,7 +330,7 @@ export default function DriverHome() {
         body: JSON.stringify({ trip_id: tripId }),
       });
     } catch {
-      // ignore
+      
     } finally {
       setTripId(null);
       setPickupPos(null);
@@ -360,7 +360,7 @@ export default function DriverHome() {
       const p = data?.waypoints?.[0]?.location;
       if (Array.isArray(p) && p.length === 2) return [p[1], p[0]];
     } catch {
-      // ignore
+      
     }
     return pos;
   }
@@ -377,9 +377,9 @@ export default function DriverHome() {
         return coords.map((c) => [c[1], c[0]]);
       }
     } catch {
-      // ignore
+      
     }
-    // fallback: linha reta com poucos passos
+    
     const steps = 25;
     const pts = [];
     for (let i = 0; i <= steps; i++) {

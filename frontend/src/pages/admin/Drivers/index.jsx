@@ -96,7 +96,7 @@ export default function AdminDrivers() {
       }
     }
 
-    // só carrega lista se estamos na rota /admin/drivers (sem id) ou se precisamos do contexto
+    
     load();
   }, []);
 
@@ -160,14 +160,14 @@ export default function AdminDrivers() {
       });
     }
 
-    // filtro por estado (prioridade do status do usuário)
+    
     const allowed = statusFilters;
     list = list.filter((d) => {
       const st = d.user_status || "ACTIVE";
       return !!allowed[st];
     });
 
-    // ordenação: mantém "mais recentes" (sem UI extra por enquanto)
+    
     const sorted = [...list];
     sorted.sort(
       (a, b) =>

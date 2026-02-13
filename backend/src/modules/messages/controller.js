@@ -44,10 +44,10 @@ class MessagesController {
     }
   }
 
-  /**
-   * Admin: dispara mensagem automática do SISTEMA (BAN / DOC_EXPIRING / APPROVED)
-   * Body opcional: { system_event, body }
-   */
+  
+
+
+
   async adminSendSystem(req, res, next) {
     try {
       const { driverId } = req.params;
@@ -66,8 +66,8 @@ class MessagesController {
             ? 'Aviso: documento próximo do vencimento. Atualize para evitar bloqueio.'
             : 'Documentos aprovados. Sua conta está liberada para operar.';
 
-      // resolve receiver (user_id do driver)
-      // reutiliza DriversRepository via service sendAdminMessageRealtime? aqui vamos pegar pelo drivers repo do serviço
+      
+      
       const driver = await (await import('../drivers/repository.js')).default.getForAdminByDriverId(driverId);
       if (!driver) return res.status(404).json({ message: 'Motorista não encontrado' });
 
@@ -84,9 +84,9 @@ class MessagesController {
     }
   }
 
-  /**
-   * Driver: thread com admin/sistema (1 conversa)
-   */
+  
+
+
   async driverThread(req, res, next) {
     try {
       const data = await MessagesService.listThreadForDriverUser(req.user.id);
@@ -99,9 +99,9 @@ class MessagesController {
     }
   }
 
-  /**
-   * Driver: marca mensagens como lidas (para “visto” do admin)
-   */
+  
+
+
   async driverMarkRead(req, res, next) {
     try {
       const result = await MessagesService.markThreadReadByDriver({
@@ -116,9 +116,9 @@ class MessagesController {
     }
   }
 
-  /**
-   * Driver: envia mensagem para admin (persistência + WS)
-   */
+  
+
+
   async driverSend(req, res, next) {
     try {
       const { body } = req.body || {};
