@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getToken } from "../../../services/api";
 import useWebSocket from "../../../hooks/useWebSocket";
+import { useAuth } from "../../../context/AuthContext";
+import { getPreviewDriverDocuments, getPreviewDriverVehicles } from "../../../utils/preview";
 import { useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import "./styles.css";
@@ -55,6 +57,8 @@ function fmtDocName(doc) {
 
 export default function DriverRenewals() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
   const [loading, setLoading] = useState(true);
@@ -86,6 +90,11 @@ export default function DriverRenewals() {
     try {
       setLoading(true);
       setError("");
+      if (isPreview) {
+        setDocs(getPreviewDriverDocuments());
+        setVehicles(getPreviewDriverVehicles());
+        return;
+      }
       const token = getToken();
 
       const [docsRes, vehRes] = await Promise.all([
@@ -110,7 +119,7 @@ export default function DriverRenewals() {
   useEffect(() => {
     load();
     
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     if (!events || events.length === 0) return;
@@ -427,7 +436,7 @@ export default function DriverRenewals() {
                       <input
                         type="date"
                         value={f.issued_at || ""}
-                        disabled={!eligible}
+                        disabled={isPreview || !eligible}
                         className={
                           docFieldInvalid({
                             eligible,
@@ -456,7 +465,7 @@ export default function DriverRenewals() {
                       <input
                         type="date"
                         value={f.expires_at || ""}
-                        disabled={!eligible}
+                        disabled={isPreview || !eligible}
                         className={
                           docFieldInvalid({
                             eligible,
@@ -500,6 +509,7 @@ export default function DriverRenewals() {
                     <select
                       value={vehicleAdd.kind}
                       className={vehicleInvalid("kind") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({ ...p, kind: e.target.value }))
                       }
@@ -514,6 +524,7 @@ export default function DriverRenewals() {
                     <input
                       value={vehicleAdd.model}
                       className={vehicleInvalid("model") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({ ...p, model: e.target.value }))
                       }
@@ -526,6 +537,7 @@ export default function DriverRenewals() {
                     <input
                       value={vehicleAdd.color}
                       className={vehicleInvalid("color") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({ ...p, color: e.target.value }))
                       }
@@ -538,6 +550,7 @@ export default function DriverRenewals() {
                     <input
                       value={vehicleAdd.year}
                       className={vehicleInvalid("year") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({
                           ...p,
@@ -555,6 +568,7 @@ export default function DriverRenewals() {
                     <input
                       value={vehicleAdd.plate}
                       className={vehicleInvalid("plate") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({
                           ...p,
@@ -571,6 +585,7 @@ export default function DriverRenewals() {
                     <input
                       value={vehicleAdd.brand}
                       className={vehicleInvalid("brand") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({ ...p, brand: e.target.value }))
                       }
@@ -584,6 +599,7 @@ export default function DriverRenewals() {
                       type="date"
                       value={vehicleAdd.crlv_issued_at}
                       className={vehicleInvalid("crlv_issued_at") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({
                           ...p,
@@ -599,6 +615,7 @@ export default function DriverRenewals() {
                       type="date"
                       value={vehicleAdd.crlv_expires_at}
                       className={vehicleInvalid("crlv_expires_at") ? "invalid" : ""}
+                      disabled={isPreview}
                       onChange={(e) =>
                         setVehicleAdd((p) => ({
                           ...p,
@@ -616,7 +633,12 @@ export default function DriverRenewals() {
           {error && <div className="alert danger">{error}</div>}
           {ok && <div className="alert success">{ok}</div>}
 
-          <button className="submit" onClick={submit} disabled={submitting}>
+          <button
+            className="submit"
+            onClick={submit}
+            disabled={isPreview || submitting}
+            title={isPreview ? "Preview: envio desabilitado" : ""}
+          >
             {submitting ? "Enviando…" : "Enviar solicitação"}
           </button>
         </>

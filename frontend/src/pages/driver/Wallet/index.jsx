@@ -2,9 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getToken } from "../../../services/api";
 import formatCurrency from "../../../utils/formatCurrency";
 import useWebSocket from "../../../hooks/useWebSocket";
+import { useAuth } from "../../../context/AuthContext";
+import { getPreviewWallet } from "../../../utils/preview";
 import "./styles.css";
 
 export default function DriverWallet() {
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
 
@@ -24,6 +28,13 @@ export default function DriverWallet() {
   async function load() {
     try {
       setLoading(true);
+      if (isPreview) {
+        const w = getPreviewWallet();
+        setBalance(Number(w.balance || 0));
+        setTrips(Array.isArray(w.trips) ? w.trips : []);
+        setFeePercent(Number(w.fee_percent || 25));
+        return;
+      }
       const token = getToken();
       const res = await fetch("http://localhost:3333/driver/wallet", {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -41,7 +52,7 @@ export default function DriverWallet() {
   useEffect(() => {
     load();
     
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     if (!events || events.length === 0) return;
@@ -66,6 +77,7 @@ export default function DriverWallet() {
   async function withdraw() {
     setError("");
     if (!canWithdraw) return;
+    if (isPreview) return;
     try {
       setWithdrawing(true);
       const token = getToken();
@@ -112,8 +124,9 @@ export default function DriverWallet() {
             placeholder="Valor para sacar (ex: 25)"
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(e.target.value)}
+            disabled={isPreview}
           />
-          <button onClick={withdraw} disabled={!canWithdraw || withdrawing}>
+          <button onClick={withdraw} disabled={isPreview || !canWithdraw || withdrawing} title={isPreview ? "Preview: ação desabilitada" : ""}>
             {withdrawing ? "..." : "Sacar"}
           </button>
         </div>
@@ -138,8 +151,12 @@ export default function DriverWallet() {
                 <span className="date">{fmtDate(t.completed_at || t.created_at)}</span>
               </div>
               <div className="trip-bottom">
-                <span className="muted">Bruto: {formatCurrency(Number(t.gross_amount || t.price || 0))}</span>
-                <span className="muted">Líquido: {formatCurrency(Number(t.net_amount || 0))}</span>
+                <span className="muted">
+                  Bruto: {formatCurrency(Number(t.gross_amount ?? t.price_gross ?? t.price ?? 0))}
+                </span>
+                <span className="muted">
+                  Líquido: {formatCurrency(Number(t.net_amount ?? t.price_net ?? 0))}
+                </span>
               </div>
             </div>
           ))}

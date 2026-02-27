@@ -4,6 +4,11 @@ import { getToken } from "../../../services/api";
 import buenosAiresImage from "../../../assets/images/buenosAires.png";
 import { useNavigate } from "react-router-dom";
 import useWebSocket from "../../../hooks/useWebSocket";
+import {
+  getPreviewDriverDocuments,
+  getPreviewDriverVehicles,
+  getPreviewNegativeReviews,
+} from "../../../utils/preview";
 import "./styles.css";
 
 function getDocumentStatusColor(status) {
@@ -16,6 +21,7 @@ export default function DriverAccount() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { events } = useWebSocket();
+  const isPreview = !!user?.is_preview;
   const processedEventsRef = useRef(0);
   const reloadTimerRef = useRef(null);
   const [documents, setDocuments] = useState([]);
@@ -37,6 +43,10 @@ export default function DriverAccount() {
 
     try {
       setLoadingDocs(true);
+      if (isPreview) {
+        setDocuments(getPreviewDriverDocuments());
+        return;
+      }
       const token = getToken();
       const res = await fetch("http://localhost:3333/documents", {
         headers: {
@@ -61,6 +71,10 @@ export default function DriverAccount() {
 
     try {
       setLoadingVehicles(true);
+      if (isPreview) {
+        setVehicles(getPreviewDriverVehicles());
+        return;
+      }
       const token = getToken();
       const res = await fetch("http://localhost:3333/vehicles", {
         headers: {
@@ -84,6 +98,10 @@ export default function DriverAccount() {
     }
     try {
       setLoadingReviews(true);
+      if (isPreview) {
+        setNegativeReviews(getPreviewNegativeReviews());
+        return;
+      }
       const token = getToken();
       const res = await fetch("http://localhost:3333/driver/reviews/negative", {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -344,7 +362,12 @@ export default function DriverAccount() {
         <button className="logout-button" onClick={logout}>
           Sair da conta
         </button>
-        <button className="send-docs-button" onClick={goToSendDocs}>
+        <button
+          className="send-docs-button"
+          onClick={goToSendDocs}
+          disabled={isPreview}
+          title={isPreview ? "Preview: envio desabilitado" : ""}
+        >
           Enviar documentos
         </button>
       </div>

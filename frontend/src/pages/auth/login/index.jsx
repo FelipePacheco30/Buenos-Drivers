@@ -6,7 +6,7 @@ import "./styles.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login: setAuthUser } = useAuth();
+  const { login: setAuthUser, loginPreview } = useAuth();
 
   const [role, setRole] = useState("DRIVER");
   const [email, setEmail] = useState("");
@@ -122,6 +122,19 @@ export default function Login() {
 
           <button type="submit" disabled={loading}>
             {loading ? "Entrando…" : "Entrar"}
+          </button>
+
+          <button
+            type="button"
+            className="preview-btn"
+            disabled={loading}
+            onClick={() => {
+              setError("");
+              loginPreview("DRIVER");
+              navigate("/driver", { replace: true });
+            }}
+          >
+            Entrar como convidado (Preview)
           </button>
 
           {error && <div className="error-message">{error}</div>}

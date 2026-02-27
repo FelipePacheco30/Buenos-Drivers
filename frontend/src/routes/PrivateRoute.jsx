@@ -9,8 +9,11 @@ export default function PrivateRoute({ children }) {
     return <div>Carregando...</div>;
   }
 
-  
-  if (!user || !token) {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!token && !user?.is_preview) {
     return <Navigate to="/login" replace />;
   }
 

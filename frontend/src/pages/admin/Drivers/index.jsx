@@ -2,6 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiFilter } from "react-icons/fi";
 import { getToken } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
+import {
+  getPreviewAdminDrivers,
+  getPreviewDriverDocuments,
+  getPreviewDriverVehicles,
+  getPreviewNegativeReviews,
+} from "../../../utils/preview";
 import "./styles.css";
 
 function toNumber(v) {
@@ -43,6 +50,8 @@ function formatDate(dateLike) {
 export default function AdminDrivers() {
   const navigate = useNavigate();
   const { driverId } = useParams();
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
 
   const filterRef = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -80,6 +89,10 @@ export default function AdminDrivers() {
     async function load() {
       try {
         setLoading(true);
+        if (isPreview) {
+          setItems(getPreviewAdminDrivers());
+          return;
+        }
         const token = getToken();
 
         const res = await fetch("http://localhost:3333/admin/drivers", {
@@ -98,7 +111,7 @@ export default function AdminDrivers() {
 
     
     load();
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     async function loadDetail() {
@@ -110,6 +123,21 @@ export default function AdminDrivers() {
 
       try {
         setLoadingDetail(true);
+        if (isPreview) {
+          const base = getPreviewAdminDrivers().find((d) => d.driver_id === driverId) || null;
+          if (!base) {
+            setDetail(null);
+            setNegativeReviews([]);
+            return;
+          }
+          setDetail({
+            ...base,
+            documents: getPreviewDriverDocuments(),
+            vehicles: getPreviewDriverVehicles(),
+          });
+          setNegativeReviews(getPreviewNegativeReviews());
+          return;
+        }
         const token = getToken();
 
         const res = await fetch(`http://localhost:3333/admin/drivers/${driverId}`, {
@@ -127,13 +155,17 @@ export default function AdminDrivers() {
     }
 
     loadDetail();
-  }, [driverId]);
+  }, [driverId, isPreview]);
 
   useEffect(() => {
     async function loadNegativeReviews() {
       if (!driverId) return;
       try {
         setLoadingReviews(true);
+        if (isPreview) {
+          setNegativeReviews(getPreviewNegativeReviews());
+          return;
+        }
         const token = getToken();
         const res = await fetch(
           `http://localhost:3333/admin/drivers/${driverId}/reviews/negative`,
@@ -146,7 +178,7 @@ export default function AdminDrivers() {
       }
     }
     loadNegativeReviews();
-  }, [driverId]);
+  }, [driverId, isPreview]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -265,6 +297,7 @@ export default function AdminDrivers() {
               <button
                 className="admin-driver-message"
                 disabled={
+                  isPreview ||
                   (() => {
                     const rep = toNumber(detail.reputation_score);
                     const docs = detail.documents_overall_status;
@@ -276,6 +309,7 @@ export default function AdminDrivers() {
                   })()
                 }
                 onClick={async () => {
+                  if (isPreview) return;
                   const token = getToken();
                   const rep = toNumber(detail.reputation_score);
                   const docs = detail.documents_overall_status;
@@ -362,7 +396,10 @@ export default function AdminDrivers() {
                     </div>
                     <button
                       className="admin-neg-review-delete"
+                      disabled={isPreview}
+                      title={isPreview ? "Preview: ação desabilitada" : ""}
                       onClick={async () => {
+                        if (isPreview) return;
                         const token = getToken();
                         const res = await fetch(
                           `http://localhost:3333/admin/reviews/negative/${r.id}`,

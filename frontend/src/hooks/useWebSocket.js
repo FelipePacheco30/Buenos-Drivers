@@ -75,6 +75,8 @@ function connect(baseUrl, userId) {
 }
 
 function ensureConnected(baseUrl) {
+  const preview = sessionStorage.getItem("preview_mode") === "1";
+  if (preview) return;
   const userId = getUserIdFromStorage();
   if (!userId) return;
 
@@ -92,6 +94,11 @@ export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
   const [events, setEvents] = useState(sharedEvents);
 
   useEffect(() => {
+    const preview = sessionStorage.getItem("preview_mode") === "1";
+    if (preview) {
+      setEvents([]);
+      return () => {};
+    }
     ensureConnected(baseUrl);
 
     const sub = (evs) => setEvents(evs);
@@ -120,6 +127,8 @@ export default function useWebSocket(baseUrl = "ws://localhost:3333/ws") {
   }, [baseUrl]);
 
   const sendMessage = (msg) => {
+    const preview = sessionStorage.getItem("preview_mode") === "1";
+    if (preview) return false;
     if (sharedWs && sharedWs.readyState === WebSocket.OPEN) {
       sharedWs.send(JSON.stringify(msg));
       return true;

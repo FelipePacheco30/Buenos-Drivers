@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiEye, FiFilter, FiSend } from "react-icons/fi";
 import useWebSocket from "../../../hooks/useWebSocket";
 import { getToken } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
+import { getPreviewAdminConversations, getPreviewAdminThread } from "../../../utils/preview";
 import "./styles.css";
 
 function stateLabel(userStatus, docsStatus) {
@@ -54,6 +56,8 @@ export default function AdminMessages() {
   const navigate = useNavigate();
   const { driverId } = useParams();
   const { events } = useWebSocket();
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
 
   const filterRef = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -92,6 +96,10 @@ export default function AdminMessages() {
     async function load() {
       try {
         setLoading(true);
+        if (isPreview) {
+          setConversations(getPreviewAdminConversations());
+          return;
+        }
         const token = getToken();
         const res = await fetch("http://localhost:3333/admin/messages", {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -103,7 +111,7 @@ export default function AdminMessages() {
       }
     }
     load();
-  }, []);
+  }, [isPreview]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,6 +141,10 @@ export default function AdminMessages() {
       }
       try {
         setThreadLoading(true);
+        if (isPreview) {
+          setThread(getPreviewAdminThread());
+          return;
+        }
         const token = getToken();
         const res = await fetch(`http://localhost:3333/admin/messages/${driverId}`, {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -144,7 +156,7 @@ export default function AdminMessages() {
       }
     }
     loadThread();
-  }, [driverId]);
+  }, [driverId, isPreview]);
 
   
   useEffect(() => {
@@ -216,6 +228,7 @@ export default function AdminMessages() {
     if (!driverId) return;
     const msg = draft.trim();
     if (!msg) return;
+    if (isPreview) return;
 
     try {
       const token = getToken();
@@ -446,8 +459,15 @@ export default function AdminMessages() {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="Escreva uma mensagem…"
+                disabled={isPreview}
               />
-              <button className="send-icon" onClick={send} aria-label="Enviar">
+              <button
+                className="send-icon"
+                onClick={send}
+                aria-label="Enviar"
+                disabled={isPreview}
+                title={isPreview ? "Preview: envio desabilitado" : ""}
+              >
                 <FiSend />
               </button>
             </div>

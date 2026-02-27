@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FiEye, FiSend } from "react-icons/fi";
 import useWebSocket from "../../../hooks/useWebSocket";
 import { getToken } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
+import { getPreviewThread } from "../../../utils/preview";
 import "./styles.css";
 
 function formatTime(dateLike) {
@@ -26,6 +28,8 @@ function formatDay(dateLike) {
 }
 
 export default function DriverMessages() {
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
   const { events, sendMessage } = useWebSocket();
   const [loading, setLoading] = useState(true);
   const [thread, setThread] = useState([]);
@@ -37,6 +41,10 @@ export default function DriverMessages() {
     async function load() {
       try {
         setLoading(true);
+        if (isPreview) {
+          setThread(getPreviewThread());
+          return;
+        }
         const token = getToken();
         const res = await fetch("http://localhost:3333/driver/messages", {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -48,7 +56,7 @@ export default function DriverMessages() {
       }
     }
     load();
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     const el = bodyRef.current;
@@ -63,6 +71,7 @@ export default function DriverMessages() {
     let cancelled = false;
     async function markRead() {
       try {
+        if (isPreview) return;
         const token = getToken();
         await fetch("http://localhost:3333/driver/messages/read", {
           method: "POST",
@@ -80,10 +89,11 @@ export default function DriverMessages() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isPreview]);
 
   
   useEffect(() => {
+    if (isPreview) return;
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_MESSAGE") return;
 
@@ -95,6 +105,7 @@ export default function DriverMessages() {
 
   
   useEffect(() => {
+    if (isPreview) return;
     const last = events[events.length - 1];
     if (!last || last.type !== "CHAT_READ") return;
     const ids = Array.isArray(last.ids) ? last.ids : [];
@@ -119,6 +130,7 @@ export default function DriverMessages() {
   async function send() {
     const msg = draft.trim();
     if (!msg) return;
+    if (isPreview) return;
 
     
     const ok = sendMessage({ type: "CHAT_SEND", body: msg });
@@ -211,8 +223,15 @@ export default function DriverMessages() {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Escreva uma mensagem…"
+          disabled={isPreview}
         />
-        <button className="send-icon" onClick={send} disabled={!canSend} aria-label="Enviar">
+        <button
+          className="send-icon"
+          onClick={send}
+          disabled={isPreview || !canSend}
+          aria-label="Enviar"
+          title={isPreview ? "Preview: envio desabilitado" : ""}
+        >
           <FiSend />
         </button>
       </div>

@@ -8,6 +8,7 @@ import {
   FiLogOut,
   FiUsers,
   FiClipboard,
+  FiRepeat,
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -18,7 +19,7 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isPreview, setPreviewRole } = useAuth();
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
 
@@ -45,6 +46,9 @@ export default function Sidebar() {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("role");
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("preview_mode");
+    sessionStorage.removeItem("preview_role");
+    sessionStorage.removeItem("preview_wallet");
     
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -228,6 +232,24 @@ export default function Sidebar() {
                 Conta
               </button>
             </>
+          )}
+
+          {isPreview && (
+            <button
+              onClick={() => {
+                if (user?.role === "DRIVER") {
+                  setPreviewRole("ADMIN");
+                  goTo("/admin");
+                } else {
+                  setPreviewRole("DRIVER");
+                  goTo("/driver");
+                }
+              }}
+              title="Alternar modo preview"
+            >
+              <FiRepeat />
+              {user?.role === "DRIVER" ? "Ver Admin (Preview)" : "Ver Motorista (Preview)"}
+            </button>
           )}
 
           <button onClick={handleLogout}>

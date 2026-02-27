@@ -6,6 +6,7 @@ import { useAuth } from "../../../context/AuthContext";
 import formatCurrency from "../../../utils/formatCurrency";
 import { getToken } from "../../../services/api";
 import useWebSocket from "../../../hooks/useWebSocket";
+import { addPreviewTrip, getPreviewDriverVehicles } from "../../../utils/preview";
 import "./styles.css";
 
 const CLIENT_USER_ID = "55555555-5555-5555-5555-555555555555";
@@ -59,6 +60,7 @@ export default function DriverHome() {
   const { user } = useAuth();
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
+  const isPreview = !!user?.is_preview;
 
   const [earnings, setEarnings] = useState(0);
   const [showBannedModal, setShowBannedModal] = useState(false);
@@ -79,6 +81,7 @@ export default function DriverHome() {
   const [simulating, setSimulating] = useState(false);
   const [accepting, setAccepting] = useState(false);
   const [tripId, setTripId] = useState(null);
+  const [activeTrip, setActiveTrip] = useState(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(0);
 
@@ -120,6 +123,7 @@ export default function DriverHome() {
   useEffect(() => {
     async function loadEarnings() {
       if (!user || user.role !== "DRIVER") return;
+      if (isPreview) return;
       try {
         const token = getToken();
         const res = await fetch("http://localhost:3333/drivers/me", {
@@ -134,12 +138,16 @@ export default function DriverHome() {
       }
     }
     if (!isBanned) loadEarnings();
-  }, [user, isBanned]);
+  }, [user, isBanned, isPreview]);
 
   useEffect(() => {
     async function loadVehicles() {
       if (!user || user.role !== "DRIVER") return;
       if (isBanned) return;
+      if (isPreview) {
+        setVehicles(getPreviewDriverVehicles());
+        return;
+      }
       try {
         setVehiclesLoading(true);
         const token = getToken();
@@ -153,7 +161,7 @@ export default function DriverHome() {
       }
     }
     loadVehicles();
-  }, [user, isBanned]);
+  }, [user, isBanned, isPreview]);
 
   useEffect(() => {
     if (!events || events.length === 0) return;
@@ -278,25 +286,29 @@ export default function DriverHome() {
     try {
       setAccepting(true);
 
-      const token = getToken();
-      const res = await fetch("http://localhost:3333/trips/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({
-          user_id: CLIENT_USER_ID,
-          type: offer.type,
-          price: offer.price,
-          origin: "Ponto de coleta",
-          destination: "Destino",
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) return;
-
-      setTripId(data.id);
+      if (isPreview) {
+        setTripId(`pv-${Date.now()}`);
+      } else {
+        const token = getToken();
+        const res = await fetch("http://localhost:3333/trips/start", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify({
+            user_id: CLIENT_USER_ID,
+            type: offer.type,
+            price: offer.price,
+            origin: "Ponto de coleta",
+            destination: "Destino",
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return;
+        setTripId(data.id);
+      }
+      setActiveTrip({ type: offer.type, price: offer.price });
       setOffer(null);
       
       setPhase("IN_TRIP");
@@ -355,19 +367,27 @@ export default function DriverHome() {
   async function finishTrip() {
     if (!tripId) return;
     try {
-      const token = getToken();
-      await fetch("http://localhost:3333/trips/finish", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ trip_id: tripId }),
-      });
+      if (isPreview) {
+        const gross = Number(activeTrip?.price || 10);
+        addPreviewTrip({ type: activeTrip?.type || "RIDE", priceGross: gross });
+        const net = gross * 0.75;
+        setEarnings((p) => Number((Number(p || 0) + net).toFixed(2)));
+      } else {
+        const token = getToken();
+        await fetch("http://localhost:3333/trips/finish", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify({ trip_id: tripId }),
+        });
+      }
     } catch {
       
     } finally {
       setTripId(null);
+      setActiveTrip(null);
       setPickupPos(null);
       setDestPos(null);
       setRoutePositions(null);

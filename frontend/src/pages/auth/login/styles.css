@@ -216,6 +216,16 @@ button:hover {
   box-shadow: 0 8px 20px rgba(252, 191, 69, 0.45);
 }
 
+.preview-btn {
+  background: rgba(117, 170, 219, 0.12);
+  border: 1px solid rgba(117, 170, 219, 0.28);
+  color: #0f1724;
+}
+
+.preview-btn:hover {
+  box-shadow: 0 8px 20px rgba(117, 170, 219, 0.28);
+}
+
 input {
   appearance: auto;
   -webkit-appearance: auto;

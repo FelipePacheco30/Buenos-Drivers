@@ -3,13 +3,56 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getToken } from "../../../services/api";
 import useWebSocket from "../../../hooks/useWebSocket";
 import { FiArrowLeft } from "react-icons/fi";
+import { useAuth } from "../../../context/AuthContext";
 import "./styles.css";
+
+const PREVIEW_RENEWALS = [
+  {
+    id: "pv-ren-1",
+    driver_id: "pv-driver-1",
+    name: "Motorista Preview",
+    email: "driver.preview@buenos.local",
+    status: "PENDING",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+  },
+];
+
+const PREVIEW_RENEWAL_DETAIL = {
+  id: "pv-ren-1",
+  driver_id: "pv-driver-1",
+  name: "Motorista Preview",
+  email: "driver.preview@buenos.local",
+  created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+  status: "PENDING",
+  documents: [
+    {
+      id: "pv-rd-1",
+      type: "CRLV",
+      vehicle_id: "pv-veh-1",
+      vehicle_plate: "PV123AB",
+      issued_at: new Date(Date.now() - 86400000 * 200).toISOString().slice(0, 10),
+      expires_at: new Date(Date.now() + 86400000 * 7).toISOString().slice(0, 10),
+    },
+  ],
+  vehicle_add: {
+    kind: "MOTO",
+    plate: "PV456CD",
+    brand: "Honda",
+    model: "CG 160",
+    year: 2022,
+    color: "Preto",
+    crlv_issued_at: new Date(Date.now() - 86400000 * 120).toISOString().slice(0, 10),
+    crlv_expires_at: new Date(Date.now() + 86400000 * 240).toISOString().slice(0, 10),
+  },
+};
 
 export default function AdminRenewals() {
   const navigate = useNavigate();
   const { renewalId } = useParams();
   const { events } = useWebSocket();
   const processedEventsRef = useRef(0);
+  const { user } = useAuth();
+  const isPreview = !!user?.is_preview;
 
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -24,6 +67,10 @@ export default function AdminRenewals() {
   const loadList = useCallback(async () => {
     setLoading(true);
     try {
+      if (isPreview) {
+        setItems(PREVIEW_RENEWALS);
+        return;
+      }
       const token = getToken();
       const res = await fetch("http://localhost:3333/admin/renewals", {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -33,7 +80,7 @@ export default function AdminRenewals() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isPreview]);
 
   const loadDetail = useCallback(async (id) => {
     if (!id) {
@@ -42,6 +89,10 @@ export default function AdminRenewals() {
     }
     setDetailLoading(true);
     try {
+      if (isPreview) {
+        setDetail(id === "pv-ren-1" ? PREVIEW_RENEWAL_DETAIL : null);
+        return;
+      }
       const token = getToken();
       const res = await fetch(`http://localhost:3333/admin/renewals/${id}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -51,7 +102,7 @@ export default function AdminRenewals() {
     } finally {
       setDetailLoading(false);
     }
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     loadList();
@@ -222,8 +273,9 @@ export default function AdminRenewals() {
 
               <button
                 className="admin-renewal-accept"
-                disabled={!allValidated || detail.status !== "PENDING"}
+                disabled={isPreview || !allValidated || detail.status !== "PENDING"}
                 onClick={async () => {
+                  if (isPreview) return;
                   const token = getToken();
                   const res = await fetch(
                     `http://localhost:3333/admin/renewals/${renewalId}/approve`,
